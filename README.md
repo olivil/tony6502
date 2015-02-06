@@ -1,8 +1,6 @@
 # tony6502
 ## Compiling
 
-To compile, execute the following:
-
-    clang -o tony6502 main.c cpu.c
-
-Replace `clang` with `gcc` if needed.
+To compile, simply run `make`. Note: this will attempt to use clang.
+Simply replace the `CC` variable's content for gcc in the `Makefile` if
+necessary.
