@@ -16,13 +16,13 @@ int execute(FILE *program, uint8_t *ram) {
         registers.p = 0b00110100;
 
         while(fread(&opcode, 1, 1, program)) {
-                step(opcode, program, ram);
+                step(opcode, program, ram, &registers);
         }
 
         return 0;
 }
 
-void step(uint8_t opcode, FILE* program, uint8_t *ram) {
+void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         switch(opcode) {
         case 0x00:
                 notImplemented(opcode);
