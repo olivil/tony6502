@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
                 return -ENOENT;
         }
 
-        execute(program, ram, RAM_SIZE);
+        execute(program, ram);
 
         return 0;
 }
