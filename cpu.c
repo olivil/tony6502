@@ -588,7 +588,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         }
 }
 
-int readByte(FILE* program, uint8_t pc) {
+uint8_t readByte(FILE* program, uint8_t pc) {
         uint8_t byte;
         
         pc += 1;
