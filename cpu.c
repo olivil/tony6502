@@ -23,6 +23,8 @@ int execute(FILE *program, uint8_t *ram) {
 }
 
 void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
+    uint8_t operand;
+
         switch(opcode) {
         case 0x00:
                 notImplemented(opcode);
@@ -37,9 +39,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x06:
-                notImplemented(opcode);
-                break;
-        case 0x07:
                 notImplemented(opcode);
                 break;
         case 0x08:
@@ -60,11 +59,26 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x0E:
                 notImplemented(opcode);
                 break;
-        case 0x0F:
-                notImplemented(opcode);
-                break;
-        case 0x10:
-                notImplemented(opcode);
+        case 0x10:                                                    /* BPL */
+                /* Check if negative flag is clear */
+                if(!(registers->p & 0b10000000)) {
+                    /* we read operand */
+                    operand = readByte(program, registers->pc);
+                    /* if negative we decrease PC */
+                    if(operand & 0b10000000) {
+                        registers->pc -= (operand & 0b01111111);
+                        printf("operand negatif!\n");
+                    }
+                    /* if positive we increment PC */
+                    else {
+                        registers->pc += (operand & 0b01111111);
+						printf("operand positif!\n");
+                    }
+                }
+                /* else we skip operand */
+                else {
+                    registers->pc += 1;
+                }
                 break;
         case 0x11:
                 notImplemented(opcode);
@@ -79,9 +93,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x16:
-                notImplemented(opcode);
-                break;
-        case 0x17:
                 notImplemented(opcode);
                 break;
         case 0x18:
@@ -102,9 +113,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x1E:
                 notImplemented(opcode);
                 break;
-        case 0x1F:
-                notImplemented(opcode);
-                break;
         case 0x20:
                 notImplemented(opcode);
                 break;
@@ -118,9 +126,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x26:
-                notImplemented(opcode);
-                break;
-        case 0x27:
                 notImplemented(opcode);
                 break;
         case 0x28:
@@ -141,9 +146,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x2E:
                 notImplemented(opcode);
                 break;
-        case 0x2F:
-                notImplemented(opcode);
-                break;
         case 0x30:
                 notImplemented(opcode);
                 break;
@@ -160,9 +162,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x36:
-                notImplemented(opcode);
-                break;
-        case 0x37:
                 notImplemented(opcode);
                 break;
         case 0x38:
@@ -183,9 +182,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x3E:
                 notImplemented(opcode);
                 break;
-        case 0x3F:
-                notImplemented(opcode);
-                break;
         case 0x40:
                 notImplemented(opcode);
                 break;
@@ -196,9 +192,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x46:
-                notImplemented(opcode);
-                break;
-        case 0x47:
                 notImplemented(opcode);
                 break;
         case 0x48:
@@ -219,9 +212,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x4E:
                 notImplemented(opcode);
                 break;
-        case 0x4F:
-                notImplemented(opcode);
-                break;
         case 0x50:
                 notImplemented(opcode);
                 break;
@@ -235,9 +225,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x56:
-                notImplemented(opcode);
-                break;
-        case 0x57:
                 notImplemented(opcode);
                 break;
         case 0x58:
@@ -255,9 +242,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x5E:
                 notImplemented(opcode);
                 break;
-        case 0x5F:
-                notImplemented(opcode);
-                break;
         case 0x60:
                 notImplemented(opcode);
                 break;
@@ -271,9 +255,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x66:
-                notImplemented(opcode);
-                break;
-        case 0x67:
                 notImplemented(opcode);
                 break;
         case 0x68:
@@ -294,9 +275,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x6E:
                 notImplemented(opcode);
                 break;
-        case 0x6F:
-                notImplemented(opcode);
-                break;
         case 0x70:
                 notImplemented(opcode);
                 break;
@@ -313,9 +291,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x76:
-                notImplemented(opcode);
-                break;
-        case 0x77:
                 notImplemented(opcode);
                 break;
         case 0x78:
@@ -336,9 +311,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x7E:
                 notImplemented(opcode);
                 break;
-        case 0x7F:
-                notImplemented(opcode);
-                break;
         case 0x80:
                 notImplemented(opcode);
                 break;
@@ -352,9 +324,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x86:
-                notImplemented(opcode);
-                break;
-        case 0x87:
                 notImplemented(opcode);
                 break;
         case 0x88:
@@ -375,9 +344,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x8E:
                 notImplemented(opcode);
                 break;
-        case 0x8F:
-                notImplemented(opcode);
-                break;
         case 0x90:
                 notImplemented(opcode);
                 break;
@@ -394,9 +360,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x96:
-                notImplemented(opcode);
-                break;
-        case 0x97:
                 notImplemented(opcode);
                 break;
         case 0x98:
@@ -417,9 +380,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x9E:
                 notImplemented(opcode);
                 break;
-        case 0x9F:
-                notImplemented(opcode);
-                break;
         case 0xA0:
                 notImplemented(opcode);
                 break;
@@ -436,9 +396,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xA6:
-                notImplemented(opcode);
-                break;
-        case 0xA7:
                 notImplemented(opcode);
                 break;
         case 0xA8:
@@ -459,9 +416,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xAE:
                 notImplemented(opcode);
                 break;
-        case 0xAF:
-                notImplemented(opcode);
-                break;
         case 0xB0:
                 notImplemented(opcode);
                 break;
@@ -478,9 +432,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xB6:
-                notImplemented(opcode);
-                break;
-        case 0xB7:
                 notImplemented(opcode);
                 break;
         case 0xB8:
@@ -501,9 +452,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xBE:
                 notImplemented(opcode);
                 break;
-        case 0xBF:
-                notImplemented(opcode);
-                break;
         case 0xC0:
                 notImplemented(opcode);
                 break;
@@ -517,9 +465,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xC6:
-                notImplemented(opcode);
-                break;
-        case 0xC7:
                 notImplemented(opcode);
                 break;
         case 0xC8:
@@ -543,9 +488,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xCE:
                 notImplemented(opcode);
                 break;
-        case 0xCF:
-                notImplemented(opcode);
-                break;
         case 0xD0:
                 notImplemented(opcode);
                 break;
@@ -559,9 +501,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xD6:
-                notImplemented(opcode);
-                break;
-        case 0xD7:
                 notImplemented(opcode);
                 break;
         case 0xD8:
@@ -582,9 +521,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xDE:
                 notImplemented(opcode);
                 break;
-        case 0xDF:
-                notImplemented(opcode);
-                break;
         case 0xE0:
                 notImplemented(opcode);
                 break;
@@ -598,9 +534,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xE6:
-                notImplemented(opcode);
-                break;
-        case 0xE7:
                 notImplemented(opcode);
                 break;
         case 0xE8:
@@ -621,9 +554,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xEE:
                 notImplemented(opcode);
                 break;
-        case 0xEF:
-                notImplemented(opcode);
-                break;
         case 0xF0:
                 notImplemented(opcode);
                 break;
@@ -637,9 +567,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xF6:
-                notImplemented(opcode);
-                break;
-        case 0xF7:
                 notImplemented(opcode);
                 break;
         case 0xF8:
@@ -657,13 +584,18 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xFE:
                 notImplemented(opcode);
                 break;
-        case 0xFF:
-                notImplemented(opcode);
-                break;
         default:
                 illegalOpcode(opcode);
                 break;
         }
+}
+
+int readByte(FILE* program, uint8_t pc) {
+        uint8_t byte;
+        
+        pc += 1;
+        fread(&byte, 1, 1, program);
+        return byte;
 }
 
 void notImplemented(uint8_t opcode) {
