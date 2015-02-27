@@ -67,12 +67,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                     /* if negative we decrease PC */
                     if(operand & 0b10000000) {
                         registers->pc -= (operand & 0b01111111);
-                        printf("operand negatif!\n");
                     }
                     /* if positive we increment PC */
                     else {
                         registers->pc += (operand & 0b01111111);
-						printf("operand positif!\n");
                     }
                 }
                 /* else we skip operand */
