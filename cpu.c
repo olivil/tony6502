@@ -580,8 +580,13 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateNegFlag(temp, registers);
                 updateZeroFlag(temp, registers);
                 break;
-        case 0xCE:
-                notImplemented(opcode);
+        case 0xCE: /* DEC a */
+                operand = fetchAbsolute(program, registers, ram);
+                operand--;
+                registers->pc -= 2;
+                storeAbsolute(program, registers, ram, operand);
+                updateNegFlag(operand, registers);
+                updateZeroFlag(operand, registers);
                 break;
         case 0xD0: /* BNE */
                 operand = fetchImmediate(program, registers);
@@ -736,6 +741,28 @@ uint8_t fetchZeroPage(FILE* program, Registers *registers, uint8_t *ram) {
         registers->pc++;
 
         return ram[byte];
+}
+
+void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram, uint8_t value) {
+        uint8_t lowbyte, highbyte;
+        uint16_t address;
+
+        fpread(&lowbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        fpread(&highbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        address = highbyte << 8 | lowbyte;
+
+        ram[address] = value;
+}
+
+void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram, uint8_t value) {
+        uint8_t byte;
+
+        fpread(&byte, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        ram[byte] = value;
 }
 
 void updateNegFlag(uint8_t result, Registers *registers) {
