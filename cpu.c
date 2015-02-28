@@ -23,7 +23,7 @@ int execute(FILE *program, uint8_t *ram) {
 }
 
 void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
-    uint8_t operand;
+        uint8_t operand;
 
         switch(opcode) {
         case 0x00:
@@ -69,19 +69,19 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x10:                                                    /* BPL */
                 /* Check if negative flag is clear */
                 if(!(registers->p & 0b10000000)) {
-                    operand = readByte(program, registers->pc);
-                    /* if negative we decrease PC */
-                    if(operand & 0b10000000) {
-                        registers->pc -= (~operand + 1);
-                    }
-                    /* if positive we increment PC */
-                    else {
-                        registers->pc += operand;
-                    }
+                        operand = readByte(program, registers->pc);
+                        /* if negative we decrease PC */
+                        if(operand & 0b10000000) {
+                                registers->pc -= (~operand + 1);
+                        }
+                        /* if positive we increment PC */
+                        else {
+                                registers->pc += operand;
+                        }
                 }
                 /* else we skip operand */
                 else {
-                    registers->pc += 1;
+                        registers->pc += 1;
                 }
                 break;
 
@@ -162,19 +162,19 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x30:                                                    /* BMI */
                 /* Check if negative flag is set */
                 if(registers->p & 0b10000000) {
-                    operand = readByte(program, registers->pc);
-                    /* if negative we decrease PC */
-                    if(operand & 0b10000000) {
-                        registers->pc -= (~operand + 1);
-                    }
-                    /* if positive we increment PC */
-                    else {
-                        registers->pc += operand;
-                    }
+                        operand = readByte(program, registers->pc);
+                        /* if negative we decrease PC */
+                        if(operand & 0b10000000) {
+                                registers->pc -= (~operand + 1);
+                        }
+                        /* if positive we increment PC */
+                        else {
+                                registers->pc += operand;
+                        }
                 }
                 /* else we skip operand */
                 else {
-                    registers->pc += 1;
+                        registers->pc += 1;
                 }
                 break;
 
@@ -506,10 +506,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = readByte(program, registers->pc);
                 /* we compare Y to memory */
                 if(registers->y >= ram[operand]) {
-                    setCarryFlag(1, registers);
+                        setCarryFlag(1, registers);
                 }
                 else{
-                    setCarryFlag(0, registers);
+                        setCarryFlag(0, registers);
                 }
                 setNegFlag(registers->y - ram[operand], registers);
                 setZeroFlag(registers->y - ram[operand], registers);
@@ -584,10 +584,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = readByte(program, registers->pc);
                 /* we compare X to memory */
                 if(registers->x >= ram[operand]) {
-                    setCarryFlag(1, registers);
+                        setCarryFlag(1, registers);
                 }
                 else{
-                    setCarryFlag(0, registers);
+                        setCarryFlag(0, registers);
                 }
                 setNegFlag(registers->x - ram[operand], registers);
                 setZeroFlag(registers->x - ram[operand], registers);
@@ -661,7 +661,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
 
 uint8_t readByte(FILE* program, uint8_t pc) {
         uint8_t byte;
-        
+
         pc += 1;
         fread(&byte, 1, 1, program);
 
@@ -670,28 +670,28 @@ uint8_t readByte(FILE* program, uint8_t pc) {
 
 void setNegFlag(uint8_t result, Registers *registers) {
         if(result & 0b1000000) {
-            registers->p = (registers->p | 0b10000000);
+                registers->p = (registers->p | 0b10000000);
         }
         else {
-            registers->p = (registers->p & 0b01111111);
+                registers->p = (registers->p & 0b01111111);
         }
 }
 
 void setZeroFlag(uint8_t result, Registers *registers) {
         if(result == 0) {
-            registers->p = (registers->p | 0b00000010);
+                registers->p = (registers->p | 0b00000010);
         }
         else {
-            registers->p = (registers->p & 0b11111101);
+                registers->p = (registers->p & 0b11111101);
         }
 }
 
 void setCarryFlag(int state, Registers *registers) {
         if(state) {
-            registers->p = (registers->p | 0b00000001);
+                registers->p = (registers->p | 0b00000001);
         }
         else {
-            registers->p = (registers->p & 0b11111110);
+                registers->p = (registers->p & 0b11111110);
         }
 }
 
