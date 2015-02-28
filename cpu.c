@@ -623,6 +623,28 @@ uint8_t fetchImmediate(FILE* program, Registers *registers) {
         return byte;
 }
 
+uint8_t fetchAbsolute(FILE* program, Registers *registers, uint8_t *ram) {
+        uint8_t lowbyte, highbyte;
+        uint16_t address;
+
+        fpread(&lowbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        fpread(&highbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        address = highbyte << 8 | lowbyte;
+
+        return ram[address];
+}
+
+uint8_t fetchZeroPage(FILE* program, Registers *registers, uint8_t *ram) {
+        uint8_t byte;
+
+        fpread(&byte, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        return ram[byte];
+}
+
 void updateNegFlag(uint8_t result, Registers *registers) {
         /* if bit 7 is set, value is negative */
         result & 0b1000000 ? SET_N(registers) : CLEAR_N(registers);

@@ -65,6 +65,8 @@ void step(uint8_t opcode, FILE *program, uint8_t *ram, Registers *registers);
 size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
               FILE *stream); /* Read from file stream at given offset */
 uint8_t fetchImmediate(FILE *program, Registers *registers);
+uint8_t fetchAbsolute(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchZeroPage(FILE *program, Registers *registers, uint8_t *ram);
 /* Flag manipulation functions */
 void updateNegFlag(uint8_t result, Registers *registers);
 void updateZeroFlag(uint8_t result, Registers *registers);
