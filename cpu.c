@@ -44,14 +44,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x08:
                 notImplemented(opcode);
                 break;
-        case 0x09:											        /* ORA # */
-				/* we read operand */
-				operand = readByte(program, registers->pc);
-				/* bitwise OR between RAM and A */
-				registers->a = (registers->a & ram[operand]);
-				/* set/clear the negative flag */
-				setNegFlag(registers->a, &registers);
-				/* set/clear the zero flag */				
+        case 0x09:                                                  /* ORA # */
+                /* we read operand */
+                operand = readByte(program, registers->pc);
+                /* bitwise OR between RAM and A */
+                registers->a = (registers->a & ram[operand]);
+                /* set/clear the negative flag */
+                setNegFlag(registers->a, &registers);
+                /* set/clear the zero flag */               
                 break;
         case 0x0A:
                 notImplemented(opcode);
@@ -150,7 +150,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x2E:
                 notImplemented(opcode);
                 break;
-        case 0x30:											          /* BMI */
+        case 0x30:                                                    /* BMI */
                 /* Check if negative flag is set */
                 if(registers->p & 0b10000000) {
                     /* we read operand */
@@ -620,21 +620,21 @@ uint8_t readByte(FILE* program, uint8_t pc) {
 }
 
 void setNegFlag(uint8_t result, Registers *registers) {
-		if(result & 0b1000000) {
-			registers->p = (registers->p | 0b10000000);
-		}
-		else {
-			registers->p = (registers->p & 0b01111111);
-		}
+        if(result & 0b1000000) {
+            registers->p = (registers->p | 0b10000000);
+        }
+        else {
+            registers->p = (registers->p & 0b01111111);
+        }
 }
 
 void setZeroFlag(uint8_t result, Registers *registers) {
-		if(result == 0) {
-			registers->p = (registers->p | 0b00000010);
-		}
-		else {
-			registers->p = (registers->p & 0b11111101);
-		}
+        if(result == 0) {
+            registers->p = (registers->p | 0b00000010);
+        }
+        else {
+            registers->p = (registers->p & 0b11111101);
+        }
 }
 
 void notImplemented(uint8_t opcode) {
