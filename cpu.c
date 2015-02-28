@@ -391,8 +391,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x86:
                 notImplemented(opcode);
                 break;
-        case 0x88:
-                notImplemented(opcode);
+        case 0x88: /* DEY */
+                registers->y--;
+                updateNegFlag(registers->y, registers);
+                updateZeroFlag(registers->y, registers);
                 break;
         case 0x89: /* BIT # */
                 operand = fetchImmediate(program, registers);
@@ -544,8 +546,13 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xC5:
                 notImplemented(opcode);
                 break;
-        case 0xC6:
-                notImplemented(opcode);
+        case 0xC6: /* DEC zp */
+                operand = fetchZeroPage(program, registers, ram);
+                operand--;
+                registers->pc--;
+                storeZeroPage(program, registers, ram, operand);
+                updateNegFlag(operand, registers);
+                updateZeroFlag(operand, registers);
                 break;
         case 0xC8:
                 notImplemented(opcode);
@@ -558,8 +565,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateNegFlag(temp, registers);
                 updateZeroFlag(temp, registers);
                 break;
-        case 0xCA:
-                notImplemented(opcode);
+        case 0xCA: /* DEX */
+                registers->x--;
+                updateNegFlag(registers->x, registers);
+                updateZeroFlag(registers->x, registers);
                 break;
         case 0xCB:
                 notImplemented(opcode);
