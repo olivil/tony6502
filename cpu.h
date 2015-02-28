@@ -73,6 +73,7 @@ void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram, uint8_t va
 void updateNegFlag(uint8_t result, Registers *registers);
 void updateZeroFlag(uint8_t result, Registers *registers);
 /* Opcode implementations and helpers */
+void ADC(uint8_t operand, Registers *registers);
 void notImplemented(uint8_t opcode);
 void illegalOpcode(uint8_t opcode);
 uint8_t binToBCD(uint8_t value);
