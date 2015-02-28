@@ -45,15 +45,15 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x09:                                                  /* ORA # */
-                /* we read operand */
                 operand = readByte(program, registers->pc);
                 /* bitwise OR between RAM and A */
-                registers->a = (registers->a & ram[operand]);
+                registers->a = (registers->a | ram[operand]);
                 /* set/clear the negative flag */
                 setNegFlag(registers->a, registers);
                 /* set/clear the zero flag */
-				setZeroFlag(registers->a, registers);
+                setZeroFlag(registers->a, registers);
                 break;
+
         case 0x0A:
                 notImplemented(opcode);
                 break;
@@ -69,7 +69,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x10:                                                    /* BPL */
                 /* Check if negative flag is clear */
                 if(!(registers->p & 0b10000000)) {
-                    /* we read operand */
                     operand = readByte(program, registers->pc);
                     /* if negative we decrease PC */
                     if(operand & 0b10000000) {
@@ -85,6 +84,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                     registers->pc += 1;
                 }
                 break;
+
         case 0x11:
                 notImplemented(opcode);
                 break;
@@ -100,9 +100,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x16:
                 notImplemented(opcode);
                 break;
-        case 0x18:
-                notImplemented(opcode);
+        case 0x18:                                                    /* CLC */
+                setCarryFlag(0, registers);
                 break;
+
         case 0x19:
                 notImplemented(opcode);
                 break;
@@ -136,9 +137,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x28:
                 notImplemented(opcode);
                 break;
-        case 0x29:
-                notImplemented(opcode);
+        case 0x29:                                                  /* AND # */
+                operand = readByte(program, registers->pc);
+                /* bitwise AND between RAM and A */
+                registers->a = (registers->a & ram[operand]);
+                /* set/clear the negative flag */
+                setNegFlag(registers->a, registers);
+                /* set/clear the zero flag */
+                setZeroFlag(registers->a, registers);
                 break;
+
         case 0x2A:
                 notImplemented(opcode);
                 break;
@@ -154,7 +162,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x30:                                                    /* BMI */
                 /* Check if negative flag is set */
                 if(registers->p & 0b10000000) {
-                    /* we read operand */
                     operand = readByte(program, registers->pc);
                     /* if negative we decrease PC */
                     if(operand & 0b10000000) {
@@ -170,6 +177,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                     registers->pc += 1;
                 }
                 break;
+
         case 0x31:
                 notImplemented(opcode);
                 break;
@@ -218,9 +226,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x48:
                 notImplemented(opcode);
                 break;
-        case 0x49:
-                notImplemented(opcode);
+        case 0x49:                                                  /* EOR # */
+                operand = readByte(program, registers->pc);
+                /* bitwise XOR between RAM and A */
+                registers->a = (registers->a ^ ram[operand]);
+                /* set/clear the negative flag */
+                setNegFlag(registers->a, registers);
+                /* set/clear the zero flag */
+                setZeroFlag(registers->a, registers);
                 break;
+
         case 0x4A:
                 notImplemented(opcode);
                 break;
@@ -401,15 +416,29 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x9E:
                 notImplemented(opcode);
                 break;
-        case 0xA0:
-                notImplemented(opcode);
+        case 0xA0:                                                  /* LDY # */
+                operand = readByte(program, registers->pc);
+                /* load RAM to Y */
+                registers->y = ram[operand];
+                /* set/clear negative flag */
+                setNegFlag(registers->y, registers);
+                /* set/clear zero flag */
+                setZeroFlag(registers->y, registers);
                 break;
+
         case 0xA1:
                 notImplemented(opcode);
                 break;
-        case 0xA2:
-                notImplemented(opcode);
+        case 0xA2:                                                  /* LDX # */
+                operand = readByte(program, registers->pc);
+                /* load RAM to X */
+                registers->x = ram[operand];
+                /* set/clear negative flag */
+                setNegFlag(registers->y, registers);
+                /* set/clear zero flag */
+                setZeroFlag(registers->y, registers);
                 break;
+                
         case 0xA4:
                 notImplemented(opcode);
                 break;
@@ -473,8 +502,17 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xBE:
                 notImplemented(opcode);
                 break;
-        case 0xC0:
-                notImplemented(opcode);
+        case 0xC0:                                                  /* CPY # */
+                operand = readByte(program, registers->pc);
+                /* we compare Y to memory */
+                if(registers->y >= ram[operand]) {
+                    setCarryFlag(1, registers);
+                }
+                else{
+                    setCarryFlag(0, registers);
+                }
+                setNegFlag(registers->y - ram[operand], registers);
+                setZeroFlag(registers->y - ram[operand], registers);
                 break;
         case 0xC1:
                 notImplemented(opcode);
@@ -542,9 +580,19 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xDE:
                 notImplemented(opcode);
                 break;
-        case 0xE0:
-                notImplemented(opcode);
+        case 0xE0:                                                  /* CPX # */
+                operand = readByte(program, registers->pc);
+                /* we compare X to memory */
+                if(registers->x >= ram[operand]) {
+                    setCarryFlag(1, registers);
+                }
+                else{
+                    setCarryFlag(0, registers);
+                }
+                setNegFlag(registers->x - ram[operand], registers);
+                setZeroFlag(registers->x - ram[operand], registers);
                 break;
+
         case 0xE1:
                 notImplemented(opcode);
                 break;
@@ -635,6 +683,15 @@ void setZeroFlag(uint8_t result, Registers *registers) {
         }
         else {
             registers->p = (registers->p & 0b11111101);
+        }
+}
+
+void setCarryFlag(int state, Registers *registers) {
+        if(state) {
+            registers->p = (registers->p | 0b00000001);
+        }
+        else {
+            registers->p = (registers->p & 0b11111110);
         }
 }
 
