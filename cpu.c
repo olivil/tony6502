@@ -686,14 +686,6 @@ void setZeroFlag(uint8_t result, Registers *registers) {
         }
 }
 
-void setCarryFlag(int state, Registers *registers) {
-        if(state) {
-                registers->p = (registers->p | 0b00000001);
-        }
-        else {
-                registers->p = (registers->p & 0b11111110);
-        }
-}
 
 void notImplemented(uint8_t opcode) {
         printf("opcode %02x not yet implemented\n", opcode);
