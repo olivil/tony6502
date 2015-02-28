@@ -1,4 +1,7 @@
 # tony6502
+
+65C02 emulator for fun and profit.
+
 ## Compiling
 
 To compile, simply run `make`. Note: this will attempt to use clang.
