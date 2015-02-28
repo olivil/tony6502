@@ -15,3 +15,4 @@ necessary.
 * [65C02 Instruction Reference](http://www.obelisk.demon.co.uk/65C02/reference.html)
 * [65C02 Adressing Modes](http://www.obelisk.demon.co.uk/65C02/addressing.html)
 * [6502 Registers](http://www.obelisk.demon.co.uk/6502/registers.html)
+* [Programming the 65C02](http://65xx.com/wp-content/uploads/2013/07/Programmanual.pdf)
