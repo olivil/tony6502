@@ -58,8 +58,8 @@ typedef struct {
 
 int execute(FILE *program, uint8_t *ram);
 uint8_t readByte(FILE *program, uint8_t pc);
-void setNegFlag(uint8_t result, Registers *registers);
-void setZeroFlag(uint8_t result, Registers *registers);
+void updateNegFlag(uint8_t result, Registers *registers);
+void updateZeroFlag(uint8_t result, Registers *registers);
 void step(uint8_t opcode, FILE *program, uint8_t *ram, Registers *registers);
 void notImplemented(uint8_t opcode);
 void illegalOpcode(uint8_t opcode);
