@@ -71,5 +71,7 @@ void updateZeroFlag(uint8_t result, Registers *registers);
 /* Opcode implementations and helpers */
 void notImplemented(uint8_t opcode);
 void illegalOpcode(uint8_t opcode);
+uint8_t binToBCD(uint8_t value);
+uint8_t BCDToBin(uint8_t value);
 
 #endif  /* CPU_H */
