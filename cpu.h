@@ -4,6 +4,31 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/* Macros to easily test for value of specific flag */
+#define N(registers) (registers->p & 0b10000000)
+#define V(registers) (registers->p & 0b01000000)
+#define B(registers) (registers->p & 0b00010000)
+#define D(registers) (registers->p & 0b00001000)
+#define I(registers) (registers->p & 0b00000100)
+#define Z(registers) (registers->p & 0b00000010)
+#define C(registers) (registers->p & 0b00000001)
+/* Macros to easily set specific flags */
+#define SET_N(registers) (registers->p |= 0b10000000)
+#define SET_V(registers) (registers->p |= 0b01000000)
+#define SET_B(registers) (registers->p |= 0b00010000)
+#define SET_D(registers) (registers->p |= 0b00001000)
+#define SET_I(registers) (registers->p |= 0b00000100)
+#define SET_Z(registers) (registers->p |= 0b00000010)
+#define SET_C(registers) (registers->p |= 0b00000001)
+/* Macros to easily clear specific flags */
+#define CLEAR_N(registers) (registers->p &= 0b01111111)
+#define CLEAR_V(registers) (registers->p &= 0b10111111)
+#define CLEAR_B(registers) (registers->p &= 0b11101111)
+#define CLEAR_D(registers) (registers->p &= 0b11110111)
+#define CLEAR_I(registers) (registers->p &= 0b11111011)
+#define CLEAR_Z(registers) (registers->p &= 0b11111101)
+#define CLEAR_C(registers) (registers->p &= 0b11111110)
+
 typedef struct {
         /* Accumulator */
         uint8_t a;
