@@ -286,8 +286,34 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x68:
                 notImplemented(opcode);
                 break;
-        case 0x69:
-                notImplemented(opcode);
+        case 0x69: /* ADC # */
+                operand = fetchImmediate(program, registers);
+
+                temp = registers->a + operand + C(registers);
+
+                /* Set (signed) overflow flag if MSB of A and temp differ */
+                ((registers->a & 0b10000000) != (temp & 0b10000000)) ?
+                        SET_V(registers) : CLEAR_V(registers);
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(temp, registers);
+
+                /* Handle decimal mode */
+                if(D(registers)) {
+                        temp = BCDToBin(registers->a) + BCDToBin(operand) +
+                                C(registers);
+                        /* Set carry if temp is greater than 99, the largest
+                           acceptable decimal value */
+                        temp > 99 ? SET_C(registers) : CLEAR_C(registers);
+                        temp %= 100; /* Wrap around if overflowing */
+                        temp = binToBCD(temp);
+                } else {
+                        /* If temp is smaller than operand,
+                           there was an unsigned overflow, so set C */
+                        (temp < operand) ?
+                                SET_C(registers) : CLEAR_C(registers);
+                }
+
+                registers->a = temp;
                 break;
         case 0x6A: /* ROR A */
                 temp = C(registers) ? 1 : 0;
@@ -719,6 +745,30 @@ void updateNegFlag(uint8_t result, Registers *registers) {
 
 void updateZeroFlag(uint8_t result, Registers *registers) {
         result == 0 ? SET_Z(registers) : CLEAR_Z(registers);
+}
+
+uint8_t binToBCD(uint8_t value) {
+        uint8_t result = 0, i = 1;
+
+        while(value != 0) {
+                result |= (value % 10) * i;
+                value /= 10;
+                i *= 16;
+        }
+
+        return result;
+}
+
+uint8_t BCDToBin(uint8_t value) {
+        uint8_t result = 0, i = 1;
+
+        while(value != 0) {
+                result |= (value % 2) * i;
+                value >>= 4;
+                i *= 10;
+        }
+
+        return result;
 }
 
 void notImplemented(uint8_t opcode) {
