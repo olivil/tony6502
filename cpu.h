@@ -28,6 +28,8 @@
 #define CLEAR_I(registers) (registers->p &= 0b11111011)
 #define CLEAR_Z(registers) (registers->p &= 0b11111101)
 #define CLEAR_C(registers) (registers->p &= 0b11111110)
+/* Convert from unsigned to signed, used in relative adressing */
+#define SIGNED(byte) ((int8_t) byte)
 
 typedef struct {
         /* Accumulator */

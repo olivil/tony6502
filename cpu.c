@@ -66,7 +66,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchImmediate(program, registers);
                 /* Branch if negative flag is clear */
                 if(!N(registers)) {
-                        registers->pc -= (~operand + 1);
+                        registers->pc += SIGNED(operand);
                 }
                 break;
         case 0x11:
@@ -142,7 +142,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchImmediate(program, registers);
                 /* Branch if negative flag is set */
                 if(N(registers)) {
-                        registers->pc -= (~operand + 1);
+                        registers->pc += SIGNED(operand);
                 }
                 break;
         case 0x31:
