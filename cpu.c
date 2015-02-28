@@ -50,8 +50,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 /* bitwise OR between RAM and A */
                 registers->a = (registers->a & ram[operand]);
                 /* set/clear the negative flag */
-                setNegFlag(registers->a, &registers);
-                /* set/clear the zero flag */               
+                setNegFlag(registers->a, registers);
+                /* set/clear the zero flag */
+				setZeroFlag(registers->a, registers);
                 break;
         case 0x0A:
                 notImplemented(opcode);
