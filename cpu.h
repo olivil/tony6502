@@ -67,6 +67,8 @@ size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
 uint8_t fetchImmediate(FILE *program, Registers *registers);
 uint8_t fetchAbsolute(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchZeroPage(FILE *program, Registers *registers, uint8_t *ram);
+void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram, uint8_t value);
+void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram, uint8_t value);
 /* Flag manipulation functions */
 void updateNegFlag(uint8_t result, Registers *registers);
 void updateZeroFlag(uint8_t result, Registers *registers);
