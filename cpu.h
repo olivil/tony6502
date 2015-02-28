@@ -56,11 +56,17 @@ typedef struct {
         uint8_t p;
 } Registers;
 
+/* Main loop functions */
 int execute(FILE *program, uint8_t *ram);
-uint8_t readByte(FILE *program, uint8_t pc);
+void step(uint8_t opcode, FILE *program, uint8_t *ram, Registers *registers);
+/* Adressing modes and memory access */
+size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
+              FILE *stream); /* Read from file stream at given offset */
+uint8_t readByte(FILE *program, Registers *registers);
+/* Flag manipulation functions */
 void updateNegFlag(uint8_t result, Registers *registers);
 void updateZeroFlag(uint8_t result, Registers *registers);
-void step(uint8_t opcode, FILE *program, uint8_t *ram, Registers *registers);
+/* Opcode implementations and helpers */
 void notImplemented(uint8_t opcode);
 void illegalOpcode(uint8_t opcode);
 

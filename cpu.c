@@ -15,7 +15,7 @@ int execute(FILE *program, uint8_t *ram) {
         registers.pc = 0x0000;
         registers.p = 0b00110100;
 
-        while(fread(&opcode, 1, 1, program)) {
+        while((opcode = readByte(program, &registers))) {
                 step(opcode, program, ram, &registers);
         }
 
@@ -45,7 +45,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x09: /* ORA # */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 registers->a = (registers->a | operand);
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
@@ -63,7 +63,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x10: /* BPL */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 /* Branch if negative flag is clear */
                 if(!N(registers)) {
                         registers->pc -= (~operand + 1);
@@ -121,7 +121,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x29: /* AND # */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 registers->a = (registers->a & operand);
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
@@ -139,7 +139,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x30: /* BMI */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 /* Branch if negative flag is set */
                 if(N(registers)) {
                         registers->pc -= (~operand + 1);
@@ -194,7 +194,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x49: /* EOR # */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 registers->a = (registers->a ^ operand);
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
@@ -380,7 +380,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xA0: /* LDY # */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 registers->y = operand;
                 updateNegFlag(registers->y, registers);
                 updateZeroFlag(registers->y, registers);
@@ -389,7 +389,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xA2: /* LDX # */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 registers->x = operand;
                 updateNegFlag(registers->y, registers);
                 updateZeroFlag(registers->y, registers);
@@ -458,7 +458,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xC0: /* CPY # */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 temp = registers->y - operand;
                 registers->y >= operand ?
                         SET_C(registers) : CLEAR_C(registers);
@@ -532,7 +532,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0xE0: /* CPX # */
-                operand = readByte(program, registers->pc);
+                operand = readByte(program, registers);
                 temp = registers->x - operand;
                 registers->x >= operand ?
                         SET_C(registers) : CLEAR_C(registers);
@@ -605,11 +605,20 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         }
 }
 
-uint8_t readByte(FILE* program, uint8_t pc) {
+size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
+              FILE *stream) {
+        if(fseek(stream, offset, SEEK_SET) != 0) {
+                return 0;
+        }
+
+        return fread(ptr, size, nmemb, stream);
+}
+
+uint8_t readByte(FILE* program, Registers *registers) {
         uint8_t byte;
 
-        pc += 1;
-        fread(&byte, 1, 1, program);
+        fpread(&byte, 1, 1, registers->pc, program);
+        registers->pc++;
 
         return byte;
 }
