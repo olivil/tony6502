@@ -143,7 +143,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x2C: /* BIT a */
                 operand = fetchAbsolute(program, registers, ram);
-                operand | 0b10000000 ? 
+                operand | 0b10000000 ?
                         SET_N(registers): CLEAR_N(registers);
                 operand | 0b01000000 ?
                         SET_V(registers): CLEAR_V(registers);
