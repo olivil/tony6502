@@ -50,8 +50,12 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
                 break;
-        case 0x0A:
-                notImplemented(opcode);
+        case 0x0A: /* ASL A */
+                registers->a & 0b10000000 ?
+                        SET_C(registers): CLEAR_C(registers);
+                registers->a <<= 1;
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0x0C:
                 notImplemented(opcode);
@@ -126,11 +130,24 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
                 break;
-        case 0x2A:
-                notImplemented(opcode);
+        case 0x2A: /* ROL A */
+                temp = C(registers) ? 1 : 0;
+                registers->a & 0b10000000 ?
+                        SET_C(registers): CLEAR_C(registers);
+                registers->a <<= 1;
+                if(temp) {
+                        registers->a |= 0b00000001;
+                }
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
-        case 0x2C:
-                notImplemented(opcode);
+        case 0x2C: /* BIT a */
+                operand = fetchAbsolute(program, registers, ram);
+                operand | 0b10000000 ? 
+                        SET_N(registers): CLEAR_N(registers);
+                operand | 0b01000000 ?
+                        SET_V(registers): CLEAR_V(registers);
+                updateZeroFlag((registers->a & operand), registers);
                 break;
         case 0x2D:
                 notImplemented(opcode);
@@ -166,8 +183,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x39:
                 notImplemented(opcode);
                 break;
-        case 0x3A:
-                notImplemented(opcode);
+        case 0x3A: /* DEC A */
+                registers->a--;
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0x3C:
                 notImplemented(opcode);
@@ -199,8 +218,12 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
                 break;
-        case 0x4A:
-                notImplemented(opcode);
+        case 0x4A: /* LSR A */
+                registers->a & 0b00000001 ?
+                        SET_C(registers): CLEAR_C(registers);
+                registers->a >>= 1;
+                CLEAR_N(registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0x4C:
                 notImplemented(opcode);
@@ -211,8 +234,12 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x4E:
                 notImplemented(opcode);
                 break;
-        case 0x50:
-                notImplemented(opcode);
+        case 0x50: /* BVC */
+                operand = fetchImmediate(program, registers);
+                /* Branch if overflow flag is clear */
+                if(!V(registers)) {
+                        registers->pc += SIGNED(operand);
+                }
                 break;
         case 0x51:
                 notImplemented(opcode);
@@ -226,8 +253,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x56:
                 notImplemented(opcode);
                 break;
-        case 0x58:
-                notImplemented(opcode);
+        case 0x58: /* CLI */
+                CLEAR_I(registers);
                 break;
         case 0x59:
                 notImplemented(opcode);
@@ -262,8 +289,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x69:
                 notImplemented(opcode);
                 break;
-        case 0x6A:
-                notImplemented(opcode);
+        case 0x6A: /* ROR A */
+                temp = C(registers) ? 1 : 0;
+                registers->a & 0b00000001 ?
+                        SET_C(registers): CLEAR_C(registers);
+                registers->a >>= 1;
+                if(temp) {
+                        registers->a |= 0b10000000;
+                }
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0x6C:
                 notImplemented(opcode);
@@ -274,8 +309,12 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x6E:
                 notImplemented(opcode);
                 break;
-        case 0x70:
-                notImplemented(opcode);
+        case 0x70: /* BVS */
+                operand = fetchImmediate(program, registers);
+                /* Branch if overflow flag is set */
+                if(V(registers)) {
+                        registers->pc += SIGNED(operand);
+                }
                 break;
         case 0x71:
                 notImplemented(opcode);
@@ -310,8 +349,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x7E:
                 notImplemented(opcode);
                 break;
-        case 0x80:
-                notImplemented(opcode);
+        case 0x80: /* BRA */
+                operand = fetchImmediate(program, registers);
+                registers->pc += SIGNED(operand);
                 break;
         case 0x81:
                 notImplemented(opcode);
@@ -328,8 +368,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x88:
                 notImplemented(opcode);
                 break;
-        case 0x89:
-                notImplemented(opcode);
+        case 0x89: /* BIT # */
+                operand = fetchImmediate(program, registers);
+                updateZeroFlag((registers->a & operand), registers);
                 break;
         case 0x8A:
                 notImplemented(opcode);
@@ -406,8 +447,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xA8:
                 notImplemented(opcode);
                 break;
-        case 0xA9:
-                notImplemented(opcode);
+        case 0xA9: /* LDA # */
+                operand = fetchImmediate(program, registers);
+                registers->a = operand;
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0xAA:
                 notImplemented(opcode);
@@ -439,8 +483,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xB6:
                 notImplemented(opcode);
                 break;
-        case 0xB8:
-                notImplemented(opcode);
+        case 0xB8: /* CLV */
+                CLEAR_V(registers);
                 break;
         case 0xB9:
                 notImplemented(opcode);
@@ -480,8 +524,13 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xC8:
                 notImplemented(opcode);
                 break;
-        case 0xC9:
-                notImplemented(opcode);
+        case 0xC9: /* CMP # */
+                operand = fetchImmediate(program, registers);
+                temp = registers->a - operand;
+                registers->a >= operand ?
+                        SET_C(registers) : CLEAR_C(registers);
+                updateNegFlag(temp, registers);
+                updateZeroFlag(temp, registers);
                 break;
         case 0xCA:
                 notImplemented(opcode);
@@ -489,17 +538,31 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xCB:
                 notImplemented(opcode);
                 break;
-        case 0xCC:
-                notImplemented(opcode);
+        case 0xCC: /* CPY a */
+                operand = fetchAbsolute(program, registers, ram);
+                temp = registers->y - operand;
+                registers->y >= operand ?
+                        SET_C(registers) : CLEAR_C(registers);
+                updateNegFlag(temp, registers);
+                updateZeroFlag(temp, registers);
                 break;
-        case 0xCD:
-                notImplemented(opcode);
+        case 0xCD: /* CMP a */
+                operand = fetchAbsolute(program, registers, ram);
+                temp = registers->a - operand;
+                registers->a >= operand ?
+                        SET_C(registers) : CLEAR_C(registers);
+                updateNegFlag(temp, registers);
+                updateZeroFlag(temp, registers);
                 break;
         case 0xCE:
                 notImplemented(opcode);
                 break;
-        case 0xD0:
-                notImplemented(opcode);
+        case 0xD0: /* BNE */
+                operand = fetchImmediate(program, registers);
+                /* Branch if zero flag is clear */
+                if(!Z(registers)) {
+                        registers->pc += SIGNED(operand);
+                }
                 break;
         case 0xD1:
                 notImplemented(opcode);
@@ -513,8 +576,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xD6:
                 notImplemented(opcode);
                 break;
-        case 0xD8:
-                notImplemented(opcode);
+        case 0xD8: /* CLD */
+                CLEAR_D(registers);
                 break;
         case 0xD9:
                 notImplemented(opcode);
@@ -557,11 +620,15 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xE9:
                 notImplemented(opcode);
                 break;
-        case 0xEA:
-                notImplemented(opcode);
+        case 0xEA: /* NOP */
                 break;
-        case 0xEC:
-                notImplemented(opcode);
+        case 0xEC: /* CPX a */
+                operand = fetchAbsolute(program, registers, ram);
+                temp = registers->x - operand;
+                registers->x >= operand ?
+                        SET_C(registers) : CLEAR_C(registers);
+                updateNegFlag(temp, registers);
+                updateZeroFlag(temp, registers);
                 break;
         case 0xED:
                 notImplemented(opcode);
