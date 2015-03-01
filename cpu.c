@@ -957,6 +957,18 @@ void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
         ram[address] = value;
 }
 
+void storeZeroPageY(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
+        uint8_t address;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address += registers->y;
+
+        ram[address] = value;
+}
+
 void storeIndirect(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value) {
         uint8_t address;

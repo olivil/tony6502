@@ -88,6 +88,8 @@ void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value);
 void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value);
+void storeZeroPageY(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
 void storeIndirect(FILE *program, Registers *registers, uint8_t *ram,
                   uint8_t value);
 void storeIndirectX(FILE *program, Registers *registers, uint8_t *ram,
