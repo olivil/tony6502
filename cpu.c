@@ -23,7 +23,7 @@ int execute(FILE *program, uint8_t *ram) {
 }
 
 void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
-        uint8_t operand, temp;
+        uint8_t operand, temp, highbyte, lowbyte;
 
         switch(opcode) {
         case 0x00:
@@ -212,8 +212,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 registers->pc -= 2;
                 storeAbsoluteX(program, registers, ram, temp);
                 break;
-        case 0x40:
-                notImplemented(opcode);
+        case 0x40: /* RTI */
+                registers->sp--;
+                registers->p = ram[registers->sp];
+                registers->sp--;
+                lowbyte = ram[registers->sp];
+                registers->sp--;
+                highbyte = ram[registers->sp];
+                registers->pc = highbyte << 8 | lowbyte;
                 break;
         case 0x41:
                 notImplemented(opcode);
@@ -285,8 +291,12 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x5E:
                 notImplemented(opcode);
                 break;
-        case 0x60:
-                notImplemented(opcode);
+        case 0x60: /* RTS */
+                registers->sp++;
+                lowbyte = ram[registers->sp];
+                registers->sp++;
+                highbyte = ram[registers->sp];
+                registers->pc = (highbyte << 8 | lowbyte) + 1;
                 break;
         case 0x61: /* ADC (zp,x) */
                 operand = fetchIndirectX(program, registers, ram);
