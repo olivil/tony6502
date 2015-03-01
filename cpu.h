@@ -73,6 +73,7 @@ uint8_t fetchAbsoluteY(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchZeroPage(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchZeroPageX(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchZeroPageY(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchZeroPageInd(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchIndirect(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchIndirectX(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchIndirectY(FILE *program, Registers *registers, uint8_t *ram);

@@ -770,7 +770,7 @@ uint8_t fetchZeroPage(FILE* program, Registers *registers, uint8_t *ram) {
 }
 
 uint8_t fetchZeroPageX(FILE *program, Registers *registers, uint8_t *ram) {
-        /* Note that the adress wraps around if greater than 0xFF */
+        /* Note that the address wraps around if greater than 0xFF */
         uint8_t address;
 
         fpread(&address, 1, 1, registers->pc, program);
@@ -782,13 +782,25 @@ uint8_t fetchZeroPageX(FILE *program, Registers *registers, uint8_t *ram) {
 }
 
 uint8_t fetchZeroPageY(FILE *program, Registers *registers, uint8_t *ram) {
-        /* Note that the adress wraps around if greater than 0xFF */
+        /* Note that the address wraps around if greater than 0xFF */
         uint8_t address;
 
         fpread(&address, 1, 1, registers->pc, program);
         registers->pc++;
 
         address += registers->y;
+
+        return ram[address];
+}
+
+uint8_t fetchZeroPageInd(FILE *program, Registers *registers, uint8_t *ram) {
+        uint8_t byte;
+        uint16_t address;
+
+        fpread(&byte, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address = ram[byte + 1] << 8 | ram[byte];
 
         return ram[address];
 }
