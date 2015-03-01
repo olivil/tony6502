@@ -598,9 +598,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateNegFlag(registers->x, registers);
                 updateZeroFlag(registers->x, registers);
                 break;
-        case 0xCB:
-                notImplemented(opcode);
-                break;
         case 0xCC: /* CPY a */
                 operand = fetchAbsolute(program, registers, ram);
                 temp = registers->y - operand;
@@ -652,9 +649,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xDA: /* PHX */
                 ram[registers->sp] = registers->x;
                 registers->sp--;
-                break;
-        case 0xDB:
-                notImplemented(opcode);
                 break;
         case 0xDD: /* CMP a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
