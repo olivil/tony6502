@@ -302,8 +302,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchIndirectX(program, registers, ram);
                 ADC(operand, registers);
                 break;
-        case 0x64:
-                notImplemented(opcode);
+        case 0x64: /* STZ zp */
+                storeZeroPage(program, registers, ram, 0);
                 break;
         case 0x65: /* ADC zp */
                 operand = fetchZeroPage(program, registers, ram);
@@ -356,8 +356,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchIndirect(program, registers, ram);
                 ADC(operand, registers);
                 break;
-        case 0x74:
-                notImplemented(opcode);
+        case 0x74: /* STZ zp, x */
+                storeZeroPageX(program, registers, ram, 0);
                 break;
         case 0x75: /* ADC zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
@@ -462,14 +462,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x9A:
                 notImplemented(opcode);
                 break;
-        case 0x9C:
-                notImplemented(opcode);
+        case 0x9C: /* STZ a */
+                storeAbsolute(program, registers, ram, 0);
                 break;
         case 0x9D: /* STA a,x */
                 storeAbsoluteX(program, registers, ram, registers->a);
                 break;
-        case 0x9E:
-                notImplemented(opcode);
+        case 0x9E: /* STZ a,x */
+                storeAbsoluteX(program, registers, ram, 0);
                 break;
         case 0xA0: /* LDY # */
                 operand = fetchImmediate(program, registers);
