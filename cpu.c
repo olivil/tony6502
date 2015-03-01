@@ -29,14 +29,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x00:
                 notImplemented(opcode);
                 break;
-        case 0x01:
-                notImplemented(opcode);
+        case 0x01: /* ORA (zp,x) */
+                operand = fetchIndirectX(program, registers, ram);
+                ORA(operand, registers);
                 break;
         case 0x04:
                 notImplemented(opcode);
                 break;
-        case 0x05:
-                notImplemented(opcode);
+        case 0x05: /* ORA zp */
+                operand = fetchZeroPage(program, registers, ram);
+                ORA(operand, registers);
                 break;
         case 0x06:
                 notImplemented(opcode);
@@ -46,9 +48,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x09: /* ORA # */
                 operand = fetchImmediate(program, registers);
-                registers->a = (registers->a | operand);
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                ORA(operand, registers);
                 break;
         case 0x0A: /* ASL A */
                 registers->a & 0b10000000 ?
@@ -60,8 +60,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x0C:
                 notImplemented(opcode);
                 break;
-        case 0x0D:
-                notImplemented(opcode);
+        case 0x0D: /* ORA a */
+                operand = fetchAbsolute(program, registers, ram);
+                ORA(operand, registers);
                 break;
         case 0x0E:
                 notImplemented(opcode);
@@ -73,17 +74,20 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                         registers->pc += SIGNED(operand);
                 }
                 break;
-        case 0x11:
-                notImplemented(opcode);
+        case 0x11: /* ORA (zp),y */
+                operand = fetchIndirectY(program, registers, ram);
+                ORA(operand, registers);
                 break;
-        case 0x12:
-                notImplemented(opcode);
+        case 0x12: /* ORA (zp) */
+                operand = fetchIndirect(program, registers, ram);
+                ORA(operand, registers);
                 break;
         case 0x14:
                 notImplemented(opcode);
                 break;
-        case 0x15:
-                notImplemented(opcode);
+        case 0x15: /* ORA zp,x */
+                operand = fetchZeroPageX(program, registers, ram);
+                ORA(operand, registers);
                 break;
         case 0x16:
                 notImplemented(opcode);
@@ -91,8 +95,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x18: /* CLC */
                 CLEAR_C(registers);
                 break;
-        case 0x19:
-                notImplemented(opcode);
+        case 0x19: /* ORA a,y */
+                operand = fetchAbsoluteY(program, registers, ram);
+                ORA(operand, registers);
                 break;
         case 0x1A:
                 notImplemented(opcode);
@@ -100,8 +105,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x1C:
                 notImplemented(opcode);
                 break;
-        case 0x1D:
-                notImplemented(opcode);
+        case 0x1D: /* ORA a,x */
+                operand = fetchAbsoluteX(program, registers, ram);
+                ORA(operand, registers);
                 break;
         case 0x1E:
                 notImplemented(opcode);
@@ -109,7 +115,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x20:
                 notImplemented(opcode);
                 break;
-        case 0x21: /* AND (ind,x) */
+        case 0x21: /* AND (zp,x) */
                 operand = fetchIndirectX(program, registers, ram);
                 AND(operand, registers);
                 break;
@@ -163,12 +169,13 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                         registers->pc += SIGNED(operand);
                 }
                 break;
-        case 0x31: /* AND (ind),y */
+        case 0x31: /* AND (zp),y */
                 operand = fetchIndirectY(program, registers, ram);
                 AND(operand, registers);
                 break;
-        case 0x32:
-                notImplemented(opcode);
+        case 0x32: /* AND (zp) */
+                operand = fetchIndirect(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x34:
                 notImplemented(opcode);
@@ -276,7 +283,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x60:
                 notImplemented(opcode);
                 break;
-        case 0x61: /* ADC (ind,x) */
+        case 0x61: /* ADC (zp,x) */
                 operand = fetchIndirectX(program, registers, ram);
                 ADC(operand, registers);
                 break;
@@ -325,17 +332,18 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                         registers->pc += SIGNED(operand);
                 }
                 break;
-        case 0x71: /* ADX (ind),y */
+        case 0x71: /* ADX (zp),y */
                 operand = fetchIndirectY(program, registers, ram);
                 ADC(operand, registers);
                 break;
-        case 0x72:
-                notImplemented(opcode);
+        case 0x72: /* ADC (zp) */
+                operand = fetchIndirect(program, registers, ram);
+                ADC(operand, registers);
                 break;
         case 0x74:
                 notImplemented(opcode);
                 break;
-        case 0x75: /* ADC (zp,x) */
+        case 0x75: /* ADC zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
                 ADC(operand, registers);
                 break;
@@ -897,7 +905,13 @@ void ADC(uint8_t operand, Registers *registers) {
 }
 
 void AND(uint8_t operand, Registers *registers) {
-        registers->a = (registers->a & operand);
+        registers->a &= operand;
+        updateNegFlag(registers->a, registers);
+        updateZeroFlag(registers->a, registers);
+}
+
+void ORA(uint8_t operand, Registers *registers) {
+        registers->a |= operand;
         updateNegFlag(registers->a, registers);
         updateZeroFlag(registers->a, registers);
 }
