@@ -109,14 +109,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x20:
                 notImplemented(opcode);
                 break;
-        case 0x21:
-                notImplemented(opcode);
+        case 0x21: /* AND (ind,x) */
+                operand = fetchIndirectX(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x24:
                 notImplemented(opcode);
                 break;
-        case 0x25:
-                notImplemented(opcode);
+        case 0x25: /* AND zp */
+                operand = fetchZeroPage(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x26:
                 notImplemented(opcode);
@@ -126,9 +128,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x29: /* AND # */
                 operand = fetchImmediate(program, registers);
-                registers->a = (registers->a & operand);
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                AND(operand, registers);
                 break;
         case 0x2A: /* ROL A */
                 temp = C(registers) ? 1 : 0;
@@ -149,8 +149,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                         SET_V(registers): CLEAR_V(registers);
                 updateZeroFlag((registers->a & operand), registers);
                 break;
-        case 0x2D:
-                notImplemented(opcode);
+        case 0x2D: /* AND a */
+                operand = fetchAbsolute(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x2E:
                 notImplemented(opcode);
@@ -162,8 +163,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                         registers->pc += SIGNED(operand);
                 }
                 break;
-        case 0x31:
-                notImplemented(opcode);
+        case 0x31: /* AND (ind),y */
+                operand = fetchIndirectY(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x32:
                 notImplemented(opcode);
@@ -171,8 +173,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x34:
                 notImplemented(opcode);
                 break;
-        case 0x35:
-                notImplemented(opcode);
+        case 0x35: /* AND zp,x */
+                operand = fetchZeroPageX(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x36:
                 notImplemented(opcode);
@@ -180,8 +183,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x38:
                 notImplemented(opcode);
                 break;
-        case 0x39:
-                notImplemented(opcode);
+        case 0x39: /* AND a,y */
+                operand = fetchAbsoluteY(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x3A: /* DEC A */
                 registers->a--;
@@ -191,8 +195,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x3C:
                 notImplemented(opcode);
                 break;
-        case 0x3D:
-                notImplemented(opcode);
+        case 0x3D: /* AND a,x */
+                operand = fetchAbsoluteX(program, registers, ram);
+                AND(operand, registers);
                 break;
         case 0x3E:
                 notImplemented(opcode);
@@ -895,6 +900,12 @@ void ADC(uint8_t operand, Registers *registers) {
         }
 
         registers->a = temp;
+}
+
+void AND(uint8_t operand, Registers *registers) {
+        registers->a = (registers->a & operand);
+        updateNegFlag(registers->a, registers);
+        updateZeroFlag(registers->a, registers);
 }
 
 uint8_t binToBCD(uint8_t value) {
