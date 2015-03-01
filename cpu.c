@@ -459,8 +459,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x99: /* STA a,y */
                 storeAbsoluteY(program, registers, ram, registers->a);
                 break;
-        case 0x9A:
-                notImplemented(opcode);
+        case 0x9A: /* TXS */
+                registers->sp = registers->x;
                 break;
         case 0x9C: /* STZ a */
                 storeAbsolute(program, registers, ram, 0);
@@ -495,8 +495,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xA6:
                 notImplemented(opcode);
                 break;
-        case 0xA8:
-                notImplemented(opcode);
+        case 0xA8: /* TAY */
+                registers->y = registers-> a;
+                updateNegFlag(registers->y, registers);
+                updateZeroFlag(registers->y, registers);
                 break;
         case 0xA9: /* LDA # */
                 operand = fetchImmediate(program, registers);
@@ -504,8 +506,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
                 break;
-        case 0xAA:
-                notImplemented(opcode);
+        case 0xAA: /* TAX */
+                registers->x = registers-> a;
+                updateNegFlag(registers->x, registers);
+                updateZeroFlag(registers->x, registers);
                 break;
         case 0xAC:
                 notImplemented(opcode);
