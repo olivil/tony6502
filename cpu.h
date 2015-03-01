@@ -65,7 +65,7 @@ void step(uint8_t opcode, FILE *program, uint8_t *ram, Registers *registers);
 /* Adressing modes and memory access */
 size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
               FILE *stream); /* Read from file stream at given offset */
-
+/* Fetch functions */
 uint8_t fetchImmediate(FILE *program, Registers *registers);
 uint8_t fetchAbsolute(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchAbsoluteX(FILE *program, Registers *registers, uint8_t *ram);
@@ -77,13 +77,22 @@ uint8_t fetchIndirect(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchIndirectX(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchIndirectY(FILE *program, Registers *registers, uint8_t *ram);
 
+/* Store functions */
 void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value);
 void storeAbsoluteX(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value);
+void storeAbsoluteY(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
 void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value);
 void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
+void storeIndirect(FILE *program, Registers *registers, uint8_t *ram,
+                  uint8_t value);
+void storeIndirectX(FILE *program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
+void storeIndirectY(FILE *program, Registers *registers, uint8_t *ram,
                    uint8_t value);
 
 /* Flag manipulation functions */

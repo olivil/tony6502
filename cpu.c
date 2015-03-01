@@ -372,8 +372,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 registers->pc --;
                 storeZeroPageX(program, registers, ram, temp);
                 break;
-        case 0x78:
-                notImplemented(opcode);
+        case 0x78: /* SEI */
+                SET_I(registers);
                 break;
         case 0x79: /* ADC a,y */
                 operand = fetchAbsoluteY(program, registers, ram);
@@ -402,14 +402,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchImmediate(program, registers);
                 registers->pc += SIGNED(operand);
                 break;
-        case 0x81:
-                notImplemented(opcode);
+        case 0x81: /* STA (zp,x) */
+                storeIndirectX(program, registers, ram, registers->a);;
                 break;
         case 0x84:
                 notImplemented(opcode);
                 break;
-        case 0x85:
-                notImplemented(opcode);
+        case 0x85: /* STA zp */
+                storeZeroPage(program, registers, ram, registers->a);
                 break;
         case 0x86:
                 notImplemented(opcode);
@@ -429,8 +429,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x8C:
                 notImplemented(opcode);
                 break;
-        case 0x8D:
-                notImplemented(opcode);
+        case 0x8D: /* STA a */
+                storeAbsolute(program, registers, ram, registers->a);
                 break;
         case 0x8E:
                 notImplemented(opcode);
@@ -438,17 +438,17 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x90:
                 notImplemented(opcode);
                 break;
-        case 0x91:
-                notImplemented(opcode);
+        case 0x91: /* STA (zp),y */
+                storeIndirectY(program, registers, ram, registers->a);
                 break;
-        case 0x92:
-                notImplemented(opcode);
+        case 0x92: /* STA (zp) */
+                storeIndirect(program, registers, ram, registers->a);
                 break;
         case 0x94:
                 notImplemented(opcode);
                 break;
-        case 0x95:
-                notImplemented(opcode);
+        case 0x95: /* STA zp,x */
+                storeZeroPageX(program, registers, ram, registers->a);
                 break;
         case 0x96:
                 notImplemented(opcode);
@@ -456,8 +456,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x98:
                 notImplemented(opcode);
                 break;
-        case 0x99:
-                notImplemented(opcode);
+        case 0x99: /* STA a,y */
+                storeAbsoluteY(program, registers, ram, registers->a);
                 break;
         case 0x9A:
                 notImplemented(opcode);
@@ -465,8 +465,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x9C:
                 notImplemented(opcode);
                 break;
-        case 0x9D:
-                notImplemented(opcode);
+        case 0x9D: /* STA a,x */
+                storeAbsoluteX(program, registers, ram, registers->a);
                 break;
         case 0x9E:
                 notImplemented(opcode);
@@ -715,8 +715,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xF6:
                 notImplemented(opcode);
                 break;
-        case 0xF8:
-                notImplemented(opcode);
+        case 0xF8: /* SED */
+                SET_D(registers);
                 break;
         case 0xF9:
                 notImplemented(opcode);
@@ -905,6 +905,22 @@ void storeAbsoluteX(FILE* program, Registers *registers, uint8_t *ram,
         ram[address] = value;
 }
 
+void storeAbsoluteY(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
+        uint8_t lowbyte, highbyte;
+        uint16_t address;
+
+        fpread(&lowbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        fpread(&highbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address = highbyte << 8 | lowbyte;
+        address += registers->y;
+
+        ram[address] = value;
+}
+
 void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value) {
         uint8_t address;
@@ -925,6 +941,51 @@ void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
         address += registers->x;
 
         ram[address] = value;
+}
+
+void storeIndirect(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
+        uint8_t address;
+        uint16_t effectiveAddress;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        effectiveAddress = ram[address + 1] << 8 | ram[address];
+
+        ram[effectiveAddress] = value;
+}
+
+void storeIndirectX(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
+        /* Note that the adress wraps around if greater than 0xFF */
+        uint8_t address;
+        uint16_t effectiveAddress;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address += registers->x;
+
+        /* Dereference and get address stored at address in ram */
+        effectiveAddress = ram[address + 1] << 8 | ram[address];
+
+        ram[effectiveAddress] = value;
+}
+
+void storeIndirectY(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
+        uint8_t address;
+        uint16_t effectiveAddress;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        /* Dereference and get address stored at address in ram */
+        effectiveAddress = ram[address + 1] << 8 | ram[address];
+        effectiveAddress += registers->y;
+
+        ram[effectiveAddress] = value;
 }
 
 void updateNegFlag(uint8_t result, Registers *registers) {
