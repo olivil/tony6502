@@ -271,8 +271,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x60:
                 notImplemented(opcode);
                 break;
-        case 0x61:
-                notImplemented(opcode);
+        case 0x61: /* ADC (ind,x) */
+                operand = fetchIndirectX(program, registers, ram);
+                ADC(operand, registers);
                 break;
         case 0x64:
                 notImplemented(opcode);
@@ -319,8 +320,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                         registers->pc += SIGNED(operand);
                 }
                 break;
-        case 0x71:
-                notImplemented(opcode);
+        case 0x71: /* ADX (ind),y */
+                operand = fetchIndirectY(program, registers, ram);
+                ADC(operand, registers);
                 break;
         case 0x72:
                 notImplemented(opcode);
@@ -328,8 +330,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x74:
                 notImplemented(opcode);
                 break;
-        case 0x75:
-                notImplemented(opcode);
+        case 0x75: /* ADC (zp,x) */
+                operand = fetchZeroPageX(program, registers, ram);
+                ADC(operand, registers);
                 break;
         case 0x76:
                 notImplemented(opcode);
@@ -337,8 +340,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x78:
                 notImplemented(opcode);
                 break;
-        case 0x79:
-                notImplemented(opcode);
+        case 0x79: /* ADC a,y */
+                operand = fetchAbsoluteY(program, registers, ram);
+                ADC(operand, registers);
                 break;
         case 0x7A:
                 notImplemented(opcode);
@@ -346,8 +350,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x7C:
                 notImplemented(opcode);
                 break;
-        case 0x7D:
-                notImplemented(opcode);
+        case 0x7D: /* ADC a,x */
+                operand = fetchAbsoluteX(program, registers, ram);
+                ADC(operand, registers);
                 break;
         case 0x7E:
                 notImplemented(opcode);
