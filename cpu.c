@@ -43,8 +43,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x06:
                 notImplemented(opcode);
                 break;
-        case 0x08:
-                notImplemented(opcode);
+        case 0x08: /* PHP */
+                ram[registers->sp] = registers->p;
+                registers->sp--;
                 break;
         case 0x09: /* ORA # */
                 operand = fetchImmediate(program, registers);
@@ -126,26 +127,22 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchZeroPage(program, registers, ram);
                 AND(operand, registers);
                 break;
-        case 0x26:
-                notImplemented(opcode);
+        case 0x26: /* ROL zp */
+                operand = fetchZeroPage(program, registers, ram);
+                temp = ROL(operand, registers);
+                registers->pc--;
+                storeZeroPage(program, registers, ram, temp);
                 break;
-        case 0x28:
-                notImplemented(opcode);
+        case 0x28: /* PLP */
+                registers->sp++;
+                registers->p = ram[registers->sp];
                 break;
         case 0x29: /* AND # */
                 operand = fetchImmediate(program, registers);
                 AND(operand, registers);
                 break;
         case 0x2A: /* ROL A */
-                temp = C(registers) ? 1 : 0;
-                registers->a & 0b10000000 ?
-                        SET_C(registers): CLEAR_C(registers);
-                registers->a <<= 1;
-                if(temp) {
-                        registers->a |= 0b00000001;
-                }
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                ROL(registers->a, registers);
                 break;
         case 0x2C: /* BIT a */
                 operand = fetchAbsolute(program, registers, ram);
@@ -159,8 +156,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchAbsolute(program, registers, ram);
                 AND(operand, registers);
                 break;
-        case 0x2E:
-                notImplemented(opcode);
+        case 0x2E: /* ROL a */
+                operand = fetchAbsolute(program, registers, ram);
+                temp = ROL(operand, registers);
+                registers->pc -= 2;
+                storeAbsolute(program, registers, ram, temp);
                 break;
         case 0x30: /* BMI */
                 operand = fetchImmediate(program, registers);
@@ -184,8 +184,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchZeroPageX(program, registers, ram);
                 AND(operand, registers);
                 break;
-        case 0x36:
-                notImplemented(opcode);
+        case 0x36: /* ROL zp,x */
+                operand = fetchZeroPageX(program, registers, ram);
+                temp = ROL(operand, registers);
+                registers->pc--;
+                storeZeroPageX(program, registers, ram, temp);
                 break;
         case 0x38:
                 notImplemented(opcode);
@@ -206,8 +209,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchAbsoluteX(program, registers, ram);
                 AND(operand, registers);
                 break;
-        case 0x3E:
-                notImplemented(opcode);
+        case 0x3E: /* ROL a,x */
+                operand = fetchAbsoluteX(program, registers, ram);
+                temp = ROL(operand, registers);
+                registers->pc -= 2;
+                storeAbsoluteX(program, registers, ram, temp);
                 break;
         case 0x40:
                 notImplemented(opcode);
@@ -221,8 +227,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x46:
                 notImplemented(opcode);
                 break;
-        case 0x48:
-                notImplemented(opcode);
+        case 0x48: /* PHA */
+                ram[registers->sp] = registers->a;
+                registers->sp--;
                 break;
         case 0x49: /* EOR # */
                 operand = fetchImmediate(program, registers);
@@ -271,8 +278,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x59:
                 notImplemented(opcode);
                 break;
-        case 0x5A:
-                notImplemented(opcode);
+        case 0x5A: /* PHY */
+                ram[registers->sp] = registers->y;
+                registers->sp--;
                 break;
         case 0x5D:
                 notImplemented(opcode);
@@ -297,8 +305,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x66:
                 notImplemented(opcode);
                 break;
-        case 0x68:
-                notImplemented(opcode);
+        case 0x68: /* PLA */
+                registers->sp++;
+                registers->a = ram[registers->sp];
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0x69: /* ADC # */
                 operand = fetchImmediate(program, registers);
@@ -357,8 +368,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchAbsoluteY(program, registers, ram);
                 ADC(operand, registers);
                 break;
-        case 0x7A:
-                notImplemented(opcode);
+        case 0x7A: /* PLY */
+                registers->sp++;
+                registers->y = ram[registers->sp];
+                updateNegFlag(registers->y, registers);
+                updateZeroFlag(registers->y, registers);
                 break;
         case 0x7C:
                 notImplemented(opcode);
@@ -617,8 +631,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xD9:
                 notImplemented(opcode);
                 break;
-        case 0xDA:
-                notImplemented(opcode);
+        case 0xDA: /* PHX */
+                ram[registers->sp] = registers->x;
+                registers->sp--;
                 break;
         case 0xDB:
                 notImplemented(opcode);
@@ -692,8 +707,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0xF9:
                 notImplemented(opcode);
                 break;
-        case 0xFA:
-                notImplemented(opcode);
+        case 0xFA: /* PLX */
+                registers->sp++;
+                registers->x = ram[registers->sp];
+                updateNegFlag(registers->x, registers);
+                updateZeroFlag(registers->x, registers);
                 break;
         case 0xFD:
                 notImplemented(opcode);
@@ -857,14 +875,42 @@ void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram,
         ram[address] = value;
 }
 
-void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
+void storeAbsoluteX(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value) {
-        uint8_t byte;
+        uint8_t lowbyte, highbyte;
+        uint16_t address;
 
-        fpread(&byte, 1, 1, registers->pc, program);
+        fpread(&lowbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        fpread(&highbyte, 1, 1, registers->pc, program);
         registers->pc++;
 
-        ram[byte] = value;
+        address = highbyte << 8 | lowbyte;
+        address += registers->x;
+
+        ram[address] = value;
+}
+
+void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
+        uint8_t address;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        ram[address] = value;
+}
+
+void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
+        uint8_t address;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address += registers->x;
+
+        ram[address] = value;
 }
 
 void updateNegFlag(uint8_t result, Registers *registers) {
@@ -914,6 +960,22 @@ void ORA(uint8_t operand, Registers *registers) {
         registers->a |= operand;
         updateNegFlag(registers->a, registers);
         updateZeroFlag(registers->a, registers);
+}
+
+uint8_t ROL(uint8_t operand, Registers *registers) {
+        uint8_t temp;
+
+        temp = C(registers) ? 1 : 0;
+        operand & 0b10000000 ?
+                SET_C(registers): CLEAR_C(registers);
+        operand <<= 1;
+        if(temp) {
+                operand |= 0b00000001;
+        }
+        updateNegFlag(operand, registers);
+        updateZeroFlag(operand, registers);
+
+        return operand;
 }
 
 uint8_t binToBCD(uint8_t value) {

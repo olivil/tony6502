@@ -79,7 +79,11 @@ uint8_t fetchIndirectY(FILE *program, Registers *registers, uint8_t *ram);
 
 void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value);
+void storeAbsoluteX(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
 void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
+void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
                    uint8_t value);
 
 /* Flag manipulation functions */
@@ -90,6 +94,7 @@ void updateZeroFlag(uint8_t result, Registers *registers);
 void ADC(uint8_t operand, Registers *registers);
 void AND(uint8_t operand, Registers *registers);
 void ORA(uint8_t operand, Registers *registers);
+uint8_t ROL(uint8_t operand, Registers *registers);
 void notImplemented(uint8_t opcode);
 void illegalOpcode(uint8_t opcode);
 uint8_t binToBCD(uint8_t value);
