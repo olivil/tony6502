@@ -102,6 +102,8 @@ void updateZeroFlag(uint8_t result, Registers *registers);
 /* Opcode implementations and helpers */
 void ADC(uint8_t operand, Registers *registers);
 void AND(uint8_t operand, Registers *registers);
+void BIT(uint8_t operand, Registers *registers);
+void CMP(uint8_t operand, Registers *registers);
 void ORA(uint8_t operand, Registers *registers);
 uint8_t ROL(uint8_t operand, Registers *registers);
 uint8_t ROR(uint8_t operand, Registers *registers);
