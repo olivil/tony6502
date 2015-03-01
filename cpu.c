@@ -402,14 +402,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x81: /* STA (zp,x) */
                 storeIndirectX(program, registers, ram, registers->a);;
                 break;
-        case 0x84:
-                notImplemented(opcode);
+        case 0x84: /* STY zp */
+                storeZeroPage(program, registers, ram, registers->y);
                 break;
         case 0x85: /* STA zp */
                 storeZeroPage(program, registers, ram, registers->a);
                 break;
-        case 0x86:
-                notImplemented(opcode);
+        case 0x86: /* STX zp */
+                storeZeroPage(program, registers, ram, registers->x);
                 break;
         case 0x88: /* DEY */
                 registers->y--;
@@ -423,14 +423,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x8A:
                 notImplemented(opcode);
                 break;
-        case 0x8C:
-                notImplemented(opcode);
+        case 0x8C: /* STY a */
+                storeAbsolute(program, registers, ram, registers->y);
                 break;
         case 0x8D: /* STA a */
                 storeAbsolute(program, registers, ram, registers->a);
                 break;
-        case 0x8E:
-                notImplemented(opcode);
+        case 0x8E: /* STX a */
+                storeAbsolute(program, registers, ram, registers->x);
                 break;
         case 0x90: /* BCC */
                 operand = fetchImmediate(program, registers);
@@ -444,14 +444,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x92: /* STA (zp) */
                 storeIndirect(program, registers, ram, registers->a);
                 break;
-        case 0x94:
-                notImplemented(opcode);
+        case 0x94: /* STY zp,x */
+                storeZeroPageX(program, registers, ram, registers->y);
                 break;
         case 0x95: /* STA zp,x */
                 storeZeroPageX(program, registers, ram, registers->a);
                 break;
-        case 0x96:
-                notImplemented(opcode);
+        case 0x96: /* STX zp,y */
+                storeZeroPageY(program, registers, ram, registers->x);
                 break;
         case 0x98:
                 notImplemented(opcode);
