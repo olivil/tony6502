@@ -221,11 +221,13 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 highbyte = ram[registers->sp];
                 registers->pc = highbyte << 8 | lowbyte;
                 break;
-        case 0x41:
-                notImplemented(opcode);
+        case 0x41: /* EOR (zp,x) */
+                operand = fetchIndirectX(program, registers, ram);
+                EOR(operand, registers);
                 break;
-        case 0x45:
-                notImplemented(opcode);
+        case 0x45: /* EOR zp */
+                operand = fetchZeroPage(program, registers, ram);
+                EOR(operand, registers);
                 break;
         case 0x46:
                 notImplemented(opcode);
@@ -236,9 +238,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x49: /* EOR # */
                 operand = fetchImmediate(program, registers);
-                registers->a = (registers->a ^ operand);
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                EOR(operand, registers);
                 break;
         case 0x4A: /* LSR A */
                 registers->a & 0b00000001 ?
@@ -250,8 +250,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x4C:
                 notImplemented(opcode);
                 break;
-        case 0x4D:
-                notImplemented(opcode);
+        case 0x4D: /* EOR a */
+                operand = fetchAbsolute(program, registers, ram);
+                EOR(operand, registers);
                 break;
         case 0x4E:
                 notImplemented(opcode);
@@ -263,14 +264,17 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                         registers->pc += SIGNED(operand);
                 }
                 break;
-        case 0x51:
-                notImplemented(opcode);
+        case 0x51: /* EOR (zp),y */
+                operand = fetchIndirectY(program, registers, ram);
+                EOR(operand, registers);
                 break;
-        case 0x52:
-                notImplemented(opcode);
+        case 0x52: /* EOR (zp) */
+                operand = fetchIndirect(program, registers, ram);
+                EOR(operand, registers);
                 break;
-        case 0x55:
-                notImplemented(opcode);
+        case 0x55: /* EOR zp,x */
+                operand = fetchZeroPageX(program, registers, ram);
+                EOR(operand, registers);
                 break;
         case 0x56:
                 notImplemented(opcode);
@@ -278,15 +282,17 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x58: /* CLI */
                 CLEAR_I(registers);
                 break;
-        case 0x59:
-                notImplemented(opcode);
+        case 0x59: /* EOR a,y */
+                operand = fetchAbsoluteY(program, registers, ram);
+                EOR(operand, registers);
                 break;
         case 0x5A: /* PHY */
                 ram[registers->sp] = registers->y;
                 registers->sp--;
                 break;
-        case 0x5D:
-                notImplemented(opcode);
+        case 0x5D: /* EOR a,x */
+                operand = fetchAbsoluteX(program, registers, ram);
+                EOR(operand, registers);
                 break;
         case 0x5E:
                 notImplemented(opcode);
@@ -1069,6 +1075,12 @@ void CMP(uint8_t operand, Registers *registers) {
                 SET_C(registers) : CLEAR_C(registers);
         updateNegFlag(temp, registers);
         updateZeroFlag(temp, registers);
+}
+
+void EOR(uint8_t operand, Registers *registers) {
+        registers->a ^= operand;
+        updateNegFlag(registers->a, registers);
+        updateZeroFlag(registers->a, registers);
 }
 
 void ORA(uint8_t operand, Registers *registers) {
