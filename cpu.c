@@ -707,7 +707,7 @@ size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
 
         return fread(ptr, size, nmemb, stream);
 }
-
+/* Immediate addressing | # */
 uint8_t fetchImmediate(FILE* program, Registers *registers) {
         uint8_t byte;
 
@@ -716,7 +716,7 @@ uint8_t fetchImmediate(FILE* program, Registers *registers) {
 
         return byte;
 }
-
+/* Absolute addressing | a */
 uint8_t fetchAbsolute(FILE* program, Registers *registers, uint8_t *ram) {
         uint8_t lowbyte, highbyte;
         uint16_t address;
@@ -729,7 +729,7 @@ uint8_t fetchAbsolute(FILE* program, Registers *registers, uint8_t *ram) {
 
         return ram[address];
 }
-
+/* Absolute indexed, x addressing | a,x */
 uint8_t fetchAbsoluteX(FILE* program, Registers *registers, uint8_t *ram) {
         uint8_t lowbyte, highbyte;
         uint16_t address;
@@ -744,7 +744,7 @@ uint8_t fetchAbsoluteX(FILE* program, Registers *registers, uint8_t *ram) {
 
         return ram[address];
 }
-
+/* Absolute indexed, y addressing | a,y */
 uint8_t fetchAbsoluteY(FILE* program, Registers *registers, uint8_t *ram) {
         uint8_t lowbyte, highbyte;
         uint16_t address;
@@ -759,16 +759,16 @@ uint8_t fetchAbsoluteY(FILE* program, Registers *registers, uint8_t *ram) {
 
         return ram[address];
 }
-
+/* Zero page addressing (aka Direct page addressing) | zp */
 uint8_t fetchZeroPage(FILE* program, Registers *registers, uint8_t *ram) {
-        uint8_t byte;
+        uint8_t address;
 
-        fpread(&byte, 1, 1, registers->pc, program);
+        fpread(&address, 1, 1, registers->pc, program);
         registers->pc++;
 
-        return ram[byte];
+        return ram[address];
 }
-
+/* Zero page indexed, x addressing | zp,x */
 uint8_t fetchZeroPageX(FILE *program, Registers *registers, uint8_t *ram) {
         /* Note that the address wraps around if greater than 0xFF */
         uint8_t address;
@@ -780,7 +780,7 @@ uint8_t fetchZeroPageX(FILE *program, Registers *registers, uint8_t *ram) {
 
         return ram[address];
 }
-
+/* Zero page indexed, y addressing | zp,y */
 uint8_t fetchZeroPageY(FILE *program, Registers *registers, uint8_t *ram) {
         /* Note that the address wraps around if greater than 0xFF */
         uint8_t address;
@@ -792,37 +792,19 @@ uint8_t fetchZeroPageY(FILE *program, Registers *registers, uint8_t *ram) {
 
         return ram[address];
 }
-
-uint8_t fetchZeroPageInd(FILE *program, Registers *registers, uint8_t *ram) {
-        uint8_t byte;
-        uint16_t address;
-
-        fpread(&byte, 1, 1, registers->pc, program);
-        registers->pc++;
-
-        address = ram[byte + 1] << 8 | ram[byte];
-
-        return ram[address];
-}
-
+/* Zero page indirect addressing | (zp) */
 uint8_t fetchIndirect(FILE *program, Registers *registers, uint8_t *ram) {
-        /* Get the  16-bit address from the operand */
-        uint8_t lowbyte, highbyte;
-        uint16_t address;
+        uint8_t address;
+        uint16_t effectiveAddress;
 
-        fpread(&lowbyte, 1, 1, registers->pc, program);
-        registers->pc++;
-        fpread(&highbyte, 1, 1, registers->pc, program);
+        fpread(&address, 1, 1, registers->pc, program);
         registers->pc++;
 
-        address = highbyte << 8 | lowbyte;
+        effectiveAddress = ram[address + 1] << 8 | ram[address];
 
-        /* Then dereference to get the 16-bit address at this memory location */
-        address = ram[address + 1] << 8 | ram[address];
-
-        return ram[address];
+        return ram[effectiveAddress];
 }
-
+/* Zero page indexed indirect, x addressing | (zp,x) */
 uint8_t fetchIndirectX(FILE *program, Registers *registers, uint8_t *ram) {
         /* Note that the adress wraps around if greater than 0xFF */
         uint8_t address;
@@ -838,7 +820,7 @@ uint8_t fetchIndirectX(FILE *program, Registers *registers, uint8_t *ram) {
 
         return ram[effectiveAddress];
 }
-
+/* Zero page indirected indexed, y addressing | (zp),y */
 uint8_t fetchIndirectY(FILE *program, Registers *registers, uint8_t *ram) {
         uint8_t address;
         uint16_t effectiveAddress;
