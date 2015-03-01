@@ -61,17 +61,31 @@ typedef struct {
 /* Main loop functions */
 int execute(FILE *program, uint8_t *ram);
 void step(uint8_t opcode, FILE *program, uint8_t *ram, Registers *registers);
+
 /* Adressing modes and memory access */
 size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
               FILE *stream); /* Read from file stream at given offset */
+
 uint8_t fetchImmediate(FILE *program, Registers *registers);
 uint8_t fetchAbsolute(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchAbsoluteX(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchAbsoluteY(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchZeroPage(FILE *program, Registers *registers, uint8_t *ram);
-void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram, uint8_t value);
-void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram, uint8_t value);
+uint8_t fetchZeroPageX(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchZeroPageY(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchIndirect(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchIndirectX(FILE *program, Registers *registers, uint8_t *ram);
+uint8_t fetchIndirectY(FILE *program, Registers *registers, uint8_t *ram);
+
+void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
+void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value);
+
 /* Flag manipulation functions */
 void updateNegFlag(uint8_t result, Registers *registers);
 void updateZeroFlag(uint8_t result, Registers *registers);
+
 /* Opcode implementations and helpers */
 void ADC(uint8_t operand, Registers *registers);
 void notImplemented(uint8_t opcode);

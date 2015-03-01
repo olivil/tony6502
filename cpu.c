@@ -720,6 +720,36 @@ uint8_t fetchAbsolute(FILE* program, Registers *registers, uint8_t *ram) {
         return ram[address];
 }
 
+uint8_t fetchAbsoluteX(FILE* program, Registers *registers, uint8_t *ram) {
+        uint8_t lowbyte, highbyte;
+        uint16_t address;
+
+        fpread(&lowbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        fpread(&highbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address = highbyte << 8 | lowbyte;
+        address += registers->x;
+
+        return ram[address];
+}
+
+uint8_t fetchAbsoluteY(FILE* program, Registers *registers, uint8_t *ram) {
+        uint8_t lowbyte, highbyte;
+        uint16_t address;
+
+        fpread(&lowbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        fpread(&highbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address = highbyte << 8 | lowbyte;
+        address += registers->y;
+
+        return ram[address];
+}
+
 uint8_t fetchZeroPage(FILE* program, Registers *registers, uint8_t *ram) {
         uint8_t byte;
 
@@ -729,7 +759,80 @@ uint8_t fetchZeroPage(FILE* program, Registers *registers, uint8_t *ram) {
         return ram[byte];
 }
 
-void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram, uint8_t value) {
+uint8_t fetchZeroPageX(FILE *program, Registers *registers, uint8_t *ram) {
+        /* Note that the adress wraps around if greater than 0xFF */
+        uint8_t address;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address += registers->x;
+
+        return ram[address];
+}
+
+uint8_t fetchZeroPageY(FILE *program, Registers *registers, uint8_t *ram) {
+        /* Note that the adress wraps around if greater than 0xFF */
+        uint8_t address;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address += registers->y;
+
+        return ram[address];
+}
+
+uint8_t fetchIndirect(FILE *program, Registers *registers, uint8_t *ram) {
+        /* Get the  16-bit address from the operand */
+        uint8_t lowbyte, highbyte;
+        uint16_t address;
+
+        fpread(&lowbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+        fpread(&highbyte, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address = highbyte << 8 | lowbyte;
+
+        /* Then dereference to get the 16-bit address at this memory location */
+        address = ram[address + 1] << 8 | ram[address];
+
+        return ram[address];
+}
+
+uint8_t fetchIndirectX(FILE *program, Registers *registers, uint8_t *ram) {
+        /* Note that the adress wraps around if greater than 0xFF */
+        uint8_t address;
+        uint16_t effectiveAddress;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        address += registers->x;
+
+        /* Dereference and get address stored at address in ram */
+        effectiveAddress = ram[address + 1] << 8 | ram[address];
+
+        return ram[effectiveAddress];
+}
+
+uint8_t fetchIndirectY(FILE *program, Registers *registers, uint8_t *ram) {
+        uint8_t address;
+        uint16_t effectiveAddress;
+
+        fpread(&address, 1, 1, registers->pc, program);
+        registers->pc++;
+
+        /* Dereference and get address stored at address in ram */
+        effectiveAddress = ram[address + 1] << 8 | ram[address];
+        effectiveAddress += registers->y;
+
+        return ram[effectiveAddress];
+}
+
+void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
         uint8_t lowbyte, highbyte;
         uint16_t address;
 
@@ -742,7 +845,8 @@ void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram, uint8_t va
         ram[address] = value;
 }
 
-void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram, uint8_t value) {
+void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
+                   uint8_t value) {
         uint8_t byte;
 
         fpread(&byte, 1, 1, registers->pc, program);
