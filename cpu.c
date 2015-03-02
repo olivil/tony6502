@@ -520,9 +520,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xA1: /* LDA (zp,x) */
                 operand = fetchIndirectX(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xA2: /* LDX # */
                 operand = fetchImmediate(program, registers);
@@ -535,9 +533,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xA5: /* LDA zp */
                 operand = fetchZeroPage(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xA6:
                 notImplemented(opcode);
@@ -549,9 +545,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xA9: /* LDA # */
                 operand = fetchImmediate(program, registers);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xAA: /* TAX */
                 registers->x = registers-> a;
@@ -563,9 +557,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xAD: /* LDA a */
                 operand = fetchAbsolute(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xAE:
                 notImplemented(opcode);
@@ -578,24 +570,18 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xB1: /* LDA (zp),y */
                 operand = fetchIndirectY(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xB2: /* LDA (zp) */
                 operand = fetchIndirect(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xB4:
                 notImplemented(opcode);
                 break;
         case 0xB5: /* LDA zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xB6:
                 notImplemented(opcode);
@@ -605,9 +591,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xB9: /* LDA a,y */
                 operand = fetchAbsoluteY(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xBA:
                 notImplemented(opcode);
@@ -617,9 +601,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xBD: /* LDA a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
-                registers->a = operand;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                LDA(operand, registers);
                 break;
         case 0xBE:
                 notImplemented(opcode);
@@ -1174,6 +1156,12 @@ void CPY(uint8_t operand, Registers *registers) {
 
 void EOR(uint8_t operand, Registers *registers) {
         registers->a ^= operand;
+        updateNegFlag(registers->a, registers);
+        updateZeroFlag(registers->a, registers);
+}
+
+void LDA(uint8_t operand, Registers *registers) {
+        registers->a = operand;
         updateNegFlag(registers->a, registers);
         updateZeroFlag(registers->a, registers);
 }
