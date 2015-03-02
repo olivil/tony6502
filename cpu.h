@@ -110,6 +110,8 @@ void CPX(uint8_t operand, Registers *registers);
 void CPY(uint8_t operand, Registers *registers);
 void EOR(uint8_t operand, Registers *registers);
 void LDA(uint8_t operand, Registers *registers);
+void LDX(uint8_t operand, Registers *registers);
+void LDY(uint8_t operand, Registers *registers);
 void ORA(uint8_t operand, Registers *registers);
 uint8_t ROL(uint8_t operand, Registers *registers);
 uint8_t ROR(uint8_t operand, Registers *registers);
