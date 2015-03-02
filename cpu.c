@@ -282,7 +282,6 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 registers->pc++;
                 fpread(&highbyte, 1, 1, registers->pc, program);
                 registers->pc++;
-                
                 registers->pc = highbyte << 8 | lowbyte;
                 break;
         case 0x4D: /* EOR a */
