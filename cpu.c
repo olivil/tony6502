@@ -627,11 +627,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xC0: /* CPY # */
                 operand = fetchImmediate(program, registers);
-                temp = registers->y - operand;
-                registers->y >= operand ?
-                        SET_C(registers) : CLEAR_C(registers);
-                updateNegFlag(temp, registers);
-                updateZeroFlag(temp, registers);
+                CPY(operand, registers);
                 break;
         case 0xC1: /* CMP (zp,x) */
                 operand = fetchIndirectX(program, registers, ram);
@@ -639,11 +635,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xC4: /* CPY zp */
                 operand = fetchZeroPage(program, registers, ram);
-                temp = registers->y - operand;
-                registers->y >= operand ?
-                        SET_C(registers) : CLEAR_C(registers);
-                updateNegFlag(temp, registers);
-                updateZeroFlag(temp, registers);
+                CPY(operand, registers);
                 break;
         case 0xC5: /* CMP zp */
                 operand = fetchZeroPage(program, registers, ram);
@@ -673,11 +665,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xCC: /* CPY a */
                 operand = fetchAbsolute(program, registers, ram);
-                temp = registers->y - operand;
-                registers->y >= operand ?
-                        SET_C(registers) : CLEAR_C(registers);
-                updateNegFlag(temp, registers);
-                updateZeroFlag(temp, registers);
+                CPY(operand, registers);
                 break;
         case 0xCD: /* CMP a */
                 operand = fetchAbsolute(program, registers, ram);
@@ -742,22 +730,14 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xE0: /* CPX # */
                 operand = fetchImmediate(program, registers);
-                temp = registers->x - operand;
-                registers->x >= operand ?
-                        SET_C(registers) : CLEAR_C(registers);
-                updateNegFlag(temp, registers);
-                updateZeroFlag(temp, registers);
+                CPX(operand, registers);
                 break;
         case 0xE1:
                 notImplemented(opcode);
                 break;
         case 0xE4: /* CPX zp */
                 operand = fetchZeroPage(program, registers, ram);
-                temp = registers->x - operand;
-                registers->x >= operand ?
-                        SET_C(registers) : CLEAR_C(registers);
-                updateNegFlag(temp, registers);
-                updateZeroFlag(temp, registers);
+                CPX(operand, registers);
                 break;
         case 0xE5:
                 notImplemented(opcode);
@@ -782,11 +762,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xEC: /* CPX a */
                 operand = fetchAbsolute(program, registers, ram);
-                temp = registers->x - operand;
-                registers->x >= operand ?
-                        SET_C(registers) : CLEAR_C(registers);
-                updateNegFlag(temp, registers);
-                updateZeroFlag(temp, registers);
+                CPX(operand, registers);
                 break;
         case 0xED:
                 notImplemented(opcode);
@@ -1176,6 +1152,22 @@ void BIT(uint8_t operand, Registers *registers) {
 void CMP(uint8_t operand, Registers *registers) {
         uint8_t temp = registers->a - operand;
         registers->a >= operand ?
+                SET_C(registers) : CLEAR_C(registers);
+        updateNegFlag(temp, registers);
+        updateZeroFlag(temp, registers);
+}
+
+void CPX(uint8_t operand, Registers *registers) {
+        uint8_t temp = registers->x - operand;
+        registers->x >= operand ?
+                SET_C(registers) : CLEAR_C(registers);
+        updateNegFlag(temp, registers);
+        updateZeroFlag(temp, registers);
+}
+
+void CPY(uint8_t operand, Registers *registers) {
+        uint8_t temp = registers->x - operand;
+        registers->y >= operand ?
                 SET_C(registers) : CLEAR_C(registers);
         updateNegFlag(temp, registers);
         updateZeroFlag(temp, registers);

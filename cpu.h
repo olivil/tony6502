@@ -106,6 +106,8 @@ void ADC(uint8_t operand, Registers *registers);
 void AND(uint8_t operand, Registers *registers);
 void BIT(uint8_t operand, Registers *registers);
 void CMP(uint8_t operand, Registers *registers);
+void CPX(uint8_t operand, Registers *registers);
+void CPY(uint8_t operand, Registers *registers);
 void EOR(uint8_t operand, Registers *registers);
 void ORA(uint8_t operand, Registers *registers);
 uint8_t ROL(uint8_t operand, Registers *registers);
