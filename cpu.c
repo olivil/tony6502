@@ -40,8 +40,15 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchZeroPage(program, registers, ram);
                 ORA(operand, registers);
                 break;
-        case 0x06:
-                notImplemented(opcode);
+        case 0x06: /* ASL zp */
+                operand = fetchZeroPage(program, registers, ram);
+                operand & 0b10000000 ?
+                        SET_C(registers): CLEAR_C(registers);
+                operand <<= 1;
+                updateNegFlag(operand, registers);
+                updateZeroFlag(operand, registers);
+                registers->pc--;
+                storeZeroPage(program, registers, ram, operand);
                 break;
         case 0x08: /* PHP */
                 ram[registers->sp] = registers->p;
@@ -65,8 +72,15 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchAbsolute(program, registers, ram);
                 ORA(operand, registers);
                 break;
-        case 0x0E:
-                notImplemented(opcode);
+        case 0x0E: /* ASL a */
+                operand = fetchAbsolute(program, registers, ram);
+                operand & 0b10000000 ?
+                        SET_C(registers): CLEAR_C(registers);
+                operand <<= 1;
+                updateNegFlag(operand, registers);
+                updateZeroFlag(operand, registers);
+                registers->pc--;
+                storeAbsolute(program, registers, ram, operand);
                 break;
         case 0x10: /* BPL */
                 operand = fetchImmediate(program, registers);
@@ -90,8 +104,15 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchZeroPageX(program, registers, ram);
                 ORA(operand, registers);
                 break;
-        case 0x16:
-                notImplemented(opcode);
+        case 0x16: /* ASL zp,x */
+                operand = fetchZeroPageX(program, registers, ram);
+                operand & 0b10000000 ?
+                        SET_C(registers): CLEAR_C(registers);
+                operand <<= 1;
+                updateNegFlag(operand, registers);
+                updateZeroFlag(operand, registers);
+                registers->pc--;
+                storeZeroPageX(program, registers, ram, operand);
                 break;
         case 0x18: /* CLC */
                 CLEAR_C(registers);
@@ -112,8 +133,15 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 operand = fetchAbsoluteX(program, registers, ram);
                 ORA(operand, registers);
                 break;
-        case 0x1E:
-                notImplemented(opcode);
+        case 0x1E: /* ASL a,x */
+                operand = fetchAbsoluteX(program, registers, ram);
+                operand & 0b10000000 ?
+                        SET_C(registers): CLEAR_C(registers);
+                operand <<= 1;
+                updateNegFlag(operand, registers);
+                updateZeroFlag(operand, registers);
+                registers->pc--;
+                storeAbsoluteX(program, registers, ram, operand);
                 break;
         case 0x20:
                 notImplemented(opcode);
