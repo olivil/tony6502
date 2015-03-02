@@ -51,7 +51,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 storeZeroPage(program, registers, ram, operand);
                 break;
         case 0x08: /* PHP */
-                ram[registers->sp] = registers->p;
+                ram[0x0100 | registers->sp] = registers->p;
                 registers->sp--;
                 break;
         case 0x09: /* ORA # */
@@ -166,7 +166,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x28: /* PLP */
                 registers->sp++;
-                registers->p = ram[registers->sp];
+                registers->p = ram[0x0100 | registers->sp];
                 break;
         case 0x29: /* AND # */
                 operand = fetchImmediate(program, registers);
@@ -244,11 +244,11 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x40: /* RTI */
                 registers->sp--;
-                registers->p = ram[registers->sp];
+                registers->p = ram[0x0100 | registers->sp];
                 registers->sp--;
-                lowbyte = ram[registers->sp];
+                lowbyte = ram[0x0100 | registers->sp];
                 registers->sp--;
-                highbyte = ram[registers->sp];
+                highbyte = ram[0x0100 | registers->sp];
                 registers->pc = highbyte << 8 | lowbyte;
                 break;
         case 0x41: /* EOR (zp,x) */
@@ -263,7 +263,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 notImplemented(opcode);
                 break;
         case 0x48: /* PHA */
-                ram[registers->sp] = registers->a;
+                ram[0x0100 | registers->sp] = registers->a;
                 registers->sp--;
                 break;
         case 0x49: /* EOR # */
@@ -321,7 +321,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 EOR(operand, registers);
                 break;
         case 0x5A: /* PHY */
-                ram[registers->sp] = registers->y;
+                ram[0x0100 | registers->sp] = registers->y;
                 registers->sp--;
                 break;
         case 0x5D: /* EOR a,x */
@@ -333,9 +333,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x60: /* RTS */
                 registers->sp++;
-                lowbyte = ram[registers->sp];
+                lowbyte = ram[0x0100 | registers->sp];
                 registers->sp++;
-                highbyte = ram[registers->sp];
+                highbyte = ram[0x0100 | registers->sp];
                 registers->pc = (highbyte << 8 | lowbyte) + 1;
                 break;
         case 0x61: /* ADC (zp,x) */
@@ -357,7 +357,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x68: /* PLA */
                 registers->sp++;
-                registers->a = ram[registers->sp];
+                registers->a = ram[0x0100 | registers->sp];
                 updateNegFlag(registers->a, registers);
                 updateZeroFlag(registers->a, registers);
                 break;
@@ -418,7 +418,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x7A: /* PLY */
                 registers->sp++;
-                registers->y = ram[registers->sp];
+                registers->y = ram[0x0100 | registers->sp];
                 updateNegFlag(registers->y, registers);
                 updateZeroFlag(registers->y, registers);
                 break;
@@ -698,7 +698,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 CMP(operand, registers);
                 break;
         case 0xDA: /* PHX */
-                ram[registers->sp] = registers->x;
+                ram[0x0100 | registers->sp] = registers->x;
                 registers->sp--;
                 break;
         case 0xDD: /* CMP a,x */
@@ -791,7 +791,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0xFA: /* PLX */
                 registers->sp++;
-                registers->x = ram[registers->sp];
+                registers->x = ram[0x0100 | registers->sp];
                 updateNegFlag(registers->x, registers);
                 updateZeroFlag(registers->x, registers);
                 break;
