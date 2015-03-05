@@ -262,6 +262,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 EOR(operand, registers);
                 break;
         case 0x46: /* LSR zp */
+                operand = fetchZeroPage(program, registers, ram);
+                temp = LSR(operand, registers);
+                registers->pc--;
+                storeZeroPage(program, registers, ram, temp);
                 break;
         case 0x48: /* PHA */
                 ram[registers->sp] = registers->a;
@@ -272,11 +276,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 EOR(operand, registers);
                 break;
         case 0x4A: /* LSR A */
-                registers->a & 0b00000001 ?
-                        SET_C(registers): CLEAR_C(registers);
-                registers->a >>= 1;
-                CLEAR_N(registers);
-                updateZeroFlag(registers->a, registers);
+                registers->a = LSR(registers->a, registers);
                 break;
         case 0x4C: /* JMP a */
                 fpread(&lowbyte, 1, 1, registers->pc, program);
@@ -290,7 +290,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 EOR(operand, registers);
                 break;
         case 0x4E: /* LSR a */
-                notImplemented(opcode);
+                operand = fetchAbsolute(program, registers, ram);
+                temp = LSR(operand, registers);
+                registers->pc -= 2;
+                storeAbsolute(program, registers, ram, temp);
                 break;
         case 0x50: /* BVC */
                 operand = fetchImmediate(program, registers);
@@ -312,7 +315,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 EOR(operand, registers);
                 break;
         case 0x56: /* LSR zp,x */
-                notImplemented(opcode);
+                operand = fetchZeroPageX(program, registers, ram);
+                temp = LSR(operand, registers);
+                registers->pc--;
+                storeZeroPageX(program, registers, ram, temp);
                 break;
         case 0x58: /* CLI */
                 CLEAR_I(registers);
@@ -330,7 +336,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 EOR(operand, registers);
                 break;
         case 0x5E: /* LSR a,x */
-                notImplemented(opcode);
+                operand = fetchAbsoluteX(program, registers, ram);
+                temp = LSR(operand, registers);
+                registers->pc -= 2;
+                storeAbsoluteX(program, registers, ram, temp);
                 break;
         case 0x60: /* RTS */
                 registers->sp++;
@@ -1181,6 +1190,16 @@ void LDY(uint8_t operand, Registers *registers) {
         registers->y = operand;
         updateNegFlag(operand, registers);
         updateZeroFlag(operand, registers);
+}
+
+uint8_t LSR(uint8_t operand, Registers *registers) {
+        operand & 0b00000001 ?
+                SET_C(registers): CLEAR_C(registers);
+        operand >>= 1;
+        CLEAR_N(registers);
+        updateZeroFlag(operand, registers);
+
+        return operand;
 }
 
 void ORA(uint8_t operand, Registers *registers) {
