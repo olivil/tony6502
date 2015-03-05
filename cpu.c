@@ -691,7 +691,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 CMP(operand, registers);
                 break;
         case 0xD2: /* CMP (zp) */
-                notImplemented(opcode);
+                operand = fetchIndirect(program, registers, ram);
+                CMP(operand, registers);
                 break;
         case 0xD5: /* CMP zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
