@@ -471,7 +471,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateZeroFlag((registers->a & operand), registers);
                 break;
         case 0x8A: /* TXA */
-                notImplemented(opcode);
+                registers->a = registers->x;
+                updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0x8C: /* STY a */
                 storeAbsolute(program, registers, ram, registers->y);
@@ -506,6 +508,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         case 0x98: /* TYA */
                 registers->a = registers->y;
                 updateNegFlag(registers->a, registers);
+                updateZeroFlag(registers->a, registers);
                 break;
         case 0x99: /* STA a,y */
                 storeAbsoluteY(program, registers, ram, registers->a);
@@ -547,7 +550,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 LDX(operand, registers);
                 break;
         case 0xA8: /* TAY */
-                registers->y = registers-> a;
+                registers->y = registers->a;
                 updateNegFlag(registers->y, registers);
                 updateZeroFlag(registers->y, registers);
                 break;
@@ -556,7 +559,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 LDA(operand, registers);
                 break;
         case 0xAA: /* TAX */
-                registers->x = registers-> a;
+                registers->x = registers->a;
                 updateNegFlag(registers->x, registers);
                 updateZeroFlag(registers->x, registers);
                 break;
@@ -606,7 +609,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 LDA(operand, registers);
                 break;
         case 0xBA: /* TSX */
-                notImplemented(opcode);
+                registers->x = registers->sp;
+                updateNegFlag(registers->x, registers);
+                updateZeroFlag(registers->x, registers);
                 break;
         case 0xBC: /* LDY a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
