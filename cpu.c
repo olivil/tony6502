@@ -173,7 +173,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 AND(operand, registers);
                 break;
         case 0x2A: /* ROL A */
-                ROL(registers->a, registers);
+                registers->a = ROL(registers->a, registers);
                 break;
         case 0x2C: /* BIT a */
                 operand = fetchAbsolute(program, registers, ram);
@@ -363,7 +363,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 ADC(operand, registers);
                 break;
         case 0x6A: /* ROR A */
-                ROR(registers->a, registers);
+                registers->a = ROR(registers->a, registers);
                 break;
         case 0x6C: /* JMP (a) */
                 notImplemented(opcode);
