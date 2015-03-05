@@ -205,6 +205,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 AND(operand, registers);
                 break;
         case 0x34: /* BIT zp,x */
+                operand = fetchZeroPageX(program, registers, ram);
+                BIT(operand, registers);
                 break;
         case 0x35: /* AND zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
@@ -229,6 +231,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateZeroFlag(registers->a, registers);
                 break;
         case 0x3C: /* BIT a,x */
+                operand = fetchAbsoluteX(program, registers, ram);
+                BIT(operand, registers);
                 break;
         case 0x3D: /* AND a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
