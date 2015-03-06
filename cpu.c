@@ -24,6 +24,7 @@ int execute(FILE *program, uint8_t *ram) {
 
 void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
         uint8_t operand, temp, highbyte, lowbyte;
+        uint16_t address;
 
         switch(opcode) {
         case 0x00: /* BRK */
@@ -271,11 +272,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 registers->a = LSR(registers->a, registers);
                 break;
         case 0x4C: /* JMP a */
+                /* read 1st operand, low byte */
                 fpread(&lowbyte, 1, 1, registers->pc, program);
                 registers->pc++;
+                /* read 2nd operand, high byte */
                 fpread(&highbyte, 1, 1, registers->pc, program);
                 registers->pc++;
-                registers->pc = highbyte << 8 | lowbyte;
+                /* assemble the two together */
+                address = highbyte << 8 | lowbyte;
+                /* switch PC to that address */
+                registers->pc = address;
                 break;
         case 0x4D: /* EOR a */
                 operand = fetchAbsolute(program, registers, ram);
@@ -371,7 +377,18 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 registers->a = ROR(registers->a, registers);
                 break;
         case 0x6C: /* JMP (a) */
-                notImplemented(opcode);
+                /* read 1st operand, low byte */
+                fpread(&lowbyte, 1, 1, registers->pc, program);
+                registers->pc++;
+                /* read 2nd operand, high byte */
+                fpread(&highbyte, 1, 1, registers->pc, program);
+                registers->pc++;
+                /* assemble the two together */
+                address = highbyte << 8 | lowbyte;
+                /* get a 16 bit value from the low byte located
+                in the ram at the address specified, and
+                the high byte which is the next byte in memory */
+                registers->pc = (ram[address] << 8) | ram[address + 1];
                 break;
         case 0x6D: /* ADC a */
                 operand = fetchAbsolute(program, registers, ram);
@@ -425,7 +442,20 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateZeroFlag(registers->y, registers);
                 break;
         case 0x7C: /* JMP (a,x) */
-                notImplemented(opcode);
+                /* read 1st operand, low byte */
+                fpread(&lowbyte, 1, 1, registers->pc, program);
+                registers->pc++;
+                /* read 2nd operand, high byte */
+                fpread(&highbyte, 1, 1, registers->pc, program);
+                registers->pc++;
+                /* assemble the two together */
+                address = highbyte << 8 | lowbyte;
+                /* Add X because this is X-indexed */
+                address += registers->x;
+                /* get a 16 bit value from the low byte located
+                in the ram at the address specified, and
+                the high byte which is the next byte in memory */
+                registers->pc = (ram[address] << 8) | ram[address + 1];
                 break;
         case 0x7D: /* ADC a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
