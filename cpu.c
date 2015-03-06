@@ -137,7 +137,18 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 storeAbsoluteX(program, registers, ram, temp);
                 break;
         case 0x20: /* JSR */
-                notImplemented(opcode);
+                fpread(&lowbyte, 1, 1, registers->pc, program);
+                registers->pc++;
+                fpread(&highbyte, 1, 1, registers->pc, program);
+                /* here we push the address of the last byte before
+                the next instruction into the stack,
+                this is our return address */
+                ram[registers->sp] = registers->pc << 8;
+                ram[registers->sp - 1] = registers->pc & 0xFF;
+                /* we assemble the address we will jump to */
+                address = highbyte << 8 | lowbyte;
+                /* we set PC to the address specified */
+                registers->pc = address;
                 break;
         case 0x21: /* AND (zp,x) */
                 operand = fetchIndirectX(program, registers, ram);
