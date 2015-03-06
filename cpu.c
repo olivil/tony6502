@@ -42,13 +42,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x06: /* ASL zp */
                 operand = fetchZeroPage(program, registers, ram);
-                operand & 0b10000000 ?
-                        SET_C(registers): CLEAR_C(registers);
-                operand <<= 1;
-                updateNegFlag(operand, registers);
-                updateZeroFlag(operand, registers);
+                temp = ASL(operand, registers);
                 registers->pc--;
-                storeZeroPage(program, registers, ram, operand);
+                storeZeroPage(program, registers, ram, temp);
                 break;
         case 0x08: /* PHP */
                 ram[registers->sp] = registers->p;
@@ -59,11 +55,7 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 ORA(operand, registers);
                 break;
         case 0x0A: /* ASL A */
-                registers->a & 0b10000000 ?
-                        SET_C(registers): CLEAR_C(registers);
-                registers->a <<= 1;
-                updateNegFlag(registers->a, registers);
-                updateZeroFlag(registers->a, registers);
+                registers->a = ASL(registers->a, registers);
                 break;
         case 0x0C: /* TSB a */
                 notImplemented(opcode);
@@ -74,13 +66,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x0E: /* ASL a */
                 operand = fetchAbsolute(program, registers, ram);
-                operand & 0b10000000 ?
-                        SET_C(registers): CLEAR_C(registers);
-                operand <<= 1;
-                updateNegFlag(operand, registers);
-                updateZeroFlag(operand, registers);
-                registers->pc--;
-                storeAbsolute(program, registers, ram, operand);
+                temp = ASL(operand, registers);
+                registers->pc -= 2;
+                storeAbsolute(program, registers, ram, temp);
                 break;
         case 0x10: /* BPL */
                 operand = fetchImmediate(program, registers);
@@ -106,13 +94,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x16: /* ASL zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
-                operand & 0b10000000 ?
-                        SET_C(registers): CLEAR_C(registers);
-                operand <<= 1;
-                updateNegFlag(operand, registers);
-                updateZeroFlag(operand, registers);
+                temp = ASL(operand, registers);
                 registers->pc--;
-                storeZeroPageX(program, registers, ram, operand);
+                storeZeroPageX(program, registers, ram, temp);
                 break;
         case 0x18: /* CLC */
                 CLEAR_C(registers);
@@ -135,13 +119,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 break;
         case 0x1E: /* ASL a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
-                operand & 0b10000000 ?
-                        SET_C(registers): CLEAR_C(registers);
-                operand <<= 1;
-                updateNegFlag(operand, registers);
-                updateZeroFlag(operand, registers);
-                registers->pc--;
-                storeAbsoluteX(program, registers, ram, operand);
+                temp = ASL(operand, registers);
+                registers->pc -= 2;
+                storeAbsoluteX(program, registers, ram, temp);
                 break;
         case 0x20: /* JSR */
                 notImplemented(opcode);
@@ -1140,6 +1120,16 @@ void AND(uint8_t operand, Registers *registers) {
         registers->a &= operand;
         updateNegFlag(registers->a, registers);
         updateZeroFlag(registers->a, registers);
+}
+
+uint8_t ASL(uint8_t operand, Registers *registers) {
+        operand & 0b10000000 ?
+                SET_C(registers): CLEAR_C(registers);
+        operand <<= 1;
+        updateNegFlag(operand, registers);
+        updateZeroFlag(operand, registers);
+
+        return operand;
 }
 
 void BIT(uint8_t operand, Registers *registers) {

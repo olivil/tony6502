@@ -104,6 +104,7 @@ void updateZeroFlag(uint8_t result, Registers *registers);
 /* Opcode implementations and helpers */
 void ADC(uint8_t operand, Registers *registers);
 void AND(uint8_t operand, Registers *registers);
+uint8_t ASL(uint8_t operand, Registers *registers);
 void BIT(uint8_t operand, Registers *registers);
 void CMP(uint8_t operand, Registers *registers);
 void CPX(uint8_t operand, Registers *registers);
