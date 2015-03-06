@@ -1244,8 +1244,9 @@ uint8_t ROR(uint8_t operand, Registers *registers) {
 
 uint8_t TSB(uint8_t operand, Registers *registers) {
 
+uint8_t TSB(uint8_t operand, Registers *registers) {
+        updateZeroFlag((registers->a & operand), registers);
         operand |= registers->a;
-        updateZeroFlag(operand, registers);
 
         return operand;
 }
