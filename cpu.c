@@ -92,7 +92,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 ORA(operand, registers);
                 break;
         case 0x14: /* TRB zp */
-                notImplemented(opcode);
+                operand = fetchZeroPage(program, registers, ram);
+                temp = TRB(operand, registers);
+                registers->pc--;
+                storeZeroPage(program, registers, ram, temp);
                 break;
         case 0x15: /* ORA zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
@@ -117,7 +120,10 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateZeroFlag(registers->a, registers);
                 break;
         case 0x1C: /* TRB a */
-                notImplemented(opcode);
+                operand = fetchAbsolute(program, registers, ram);
+                temp = TRB(operand, registers);
+                registers->pc -= 2;
+                storeAbsolute(program, registers, ram, temp);
                 break;
         case 0x1D: /* ORA a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
@@ -1242,7 +1248,12 @@ uint8_t ROR(uint8_t operand, Registers *registers) {
         return operand;
 }
 
-uint8_t TSB(uint8_t operand, Registers *registers) {
+uint8_t TRB(uint8_t operand, Registers *registers) {
+        updateZeroFlag((registers->a & operand), registers);
+        operand &= ~registers->a;
+
+        return operand;
+}
 
 uint8_t TSB(uint8_t operand, Registers *registers) {
         updateZeroFlag((registers->a & operand), registers);
