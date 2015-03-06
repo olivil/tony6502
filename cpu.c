@@ -28,7 +28,24 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
 
         switch(opcode) {
         case 0x00: /* BRK */
-                notImplemented(opcode);
+                /* we skip the signature byte after the BRK opcode */
+                registers->pc++;
+                /* we push the high byte of the return address to the stack*/
+                ram[registers->sp] = registers->pc & 0xFF;
+                registers->sp--;
+                /* we push the low byte of the return address to the stack*/
+                ram[registers->sp] = registers->pc << 8;
+                registers->sp--;
+                /* we push the P register with B flag set to the stack*/
+                ram[registers->sp] = registers->p | 0b00010000;
+                registers->sp--;
+                /* we set I and we clear D (the latter is 65C02 specific) */
+                SET_I(registers);
+                CLEAR_D(registers);
+                /* we set PC to the address at the reset vector */
+                lowbyte = ram[0xFFFE];
+                highbyte = ram[0xFFFF];
+                registers->pc = highbyte << 8 | lowbyte;
                 break;
         case 0x01: /* ORA (zp,x) */
                 operand = fetchIndirectX(program, registers, ram);
@@ -144,7 +161,9 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 the next instruction into the stack,
                 this is our return address */
                 ram[registers->sp] = registers->pc << 8;
-                ram[registers->sp - 1] = registers->pc & 0xFF;
+                registers->sp--;
+                ram[registers->sp] = registers->pc & 0xFF;
+                registers->sp--;
                 /* we assemble the address we will jump to */
                 address = highbyte << 8 | lowbyte;
                 /* we set PC to the address specified */
