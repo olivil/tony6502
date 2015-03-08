@@ -1324,6 +1324,7 @@ void SBC(uint8_t operand, Registers *registers) {
         if(D(registers)) {
                 temp = BCDToBin(registers->a) - BCDToBin(operand) -
                         !C(registers);
+                /* FIXME: handle underflow? */
                 temp > 99 ? SET_V(registers) : CLEAR_V(registers);
                 temp %= 100; /* Wrap around if overflowing */
                 temp = binToBCD(temp);
