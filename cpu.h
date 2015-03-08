@@ -117,6 +117,7 @@ uint8_t LSR(uint8_t operand, Registers *registers);
 void ORA(uint8_t operand, Registers *registers);
 uint8_t ROL(uint8_t operand, Registers *registers);
 uint8_t ROR(uint8_t operand, Registers *registers);
+void SBC(uint8_t operand, Registers *registers);
 uint8_t TRB(uint8_t operand, Registers *registers);
 uint8_t TSB(uint8_t operand, Registers *registers);
 void notImplemented(uint8_t opcode);

@@ -158,8 +158,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 registers->pc++;
                 fpread(&highbyte, 1, 1, registers->pc, program);
                 /* here we push the address of the last byte before
-                the next instruction into the stack,
-                this is our return address */
+                   the next instruction into the stack,
+                   this is our return address */
                 ram[registers->sp] = registers->pc << 8;
                 registers->sp--;
                 ram[registers->sp] = registers->pc & 0xFF;
@@ -416,8 +416,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 /* assemble the two together */
                 address = highbyte << 8 | lowbyte;
                 /* get a 16 bit value from the low byte located
-                in the ram at the address specified, and
-                the high byte which is the next byte in memory */
+                   in the ram at the address specified, and
+                   the high byte which is the next byte in memory */
                 registers->pc = (ram[address] << 8) | ram[address + 1];
                 break;
         case 0x6D: /* ADC a */
@@ -483,8 +483,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 /* Add X because this is X-indexed */
                 address += registers->x;
                 /* get a 16 bit value from the low byte located
-                in the ram at the address specified, and
-                the high byte which is the next byte in memory */
+                   in the ram at the address specified, and
+                   the high byte which is the next byte in memory */
                 registers->pc = (ram[address] << 8) | ram[address + 1];
                 break;
         case 0x7D: /* ADC a,x */
@@ -786,14 +786,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 CPX(operand, registers);
                 break;
         case 0xE1: /* SBC (zp,x) */
-                notImplemented(opcode);
+                operand = fetchIndirectX(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xE4: /* CPX zp */
                 operand = fetchZeroPage(program, registers, ram);
                 CPX(operand, registers);
                 break;
         case 0xE5: /* SBC zp */
-                notImplemented(opcode);
+                operand = fetchZeroPage(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xE6: /* INC zp */
                 operand = fetchZeroPage(program, registers, ram);
@@ -809,7 +811,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateZeroFlag(registers->x, registers);
                 break;
         case 0xE9: /* SBC # */
-                notImplemented(opcode);
+                operand = fetchImmediate(program, registers);
+                SBC(operand, registers);
                 break;
         case 0xEA: /* NOP */
                 break;
@@ -818,7 +821,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 CPX(operand, registers);
                 break;
         case 0xED: /* SBC a */
-                notImplemented(opcode);
+                operand = fetchAbsolute(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xEE: /* INC a */
                 operand = fetchAbsolute(program, registers, ram);
@@ -835,13 +839,16 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 }
                 break;
         case 0xF1: /* SBC (zp),y */
-                notImplemented(opcode);
+                operand = fetchIndirectY(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xF2: /* SBC (zp) */
-                notImplemented(opcode);
+                operand = fetchIndirect(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xF5: /* SBC zp,x */
-                notImplemented(opcode);
+                operand = fetchZeroPageX(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xF6: /* INC zp,x */
                 operand = fetchZeroPageX(program, registers, ram);
@@ -855,7 +862,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 SET_D(registers);
                 break;
         case 0xF9: /* SBC a,y */
-                notImplemented(opcode);
+                operand = fetchAbsoluteY(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xFA: /* PLX */
                 registers->sp++;
@@ -864,7 +872,8 @@ void step(uint8_t opcode, FILE* program, uint8_t *ram, Registers *registers) {
                 updateZeroFlag(registers->x, registers);
                 break;
         case 0xFD: /* SBC a,x */
-                notImplemented(opcode);
+                operand = fetchAbsoluteX(program, registers, ram);
+                SBC(operand, registers);
                 break;
         case 0xFE: /* INC a,x */
                 operand = fetchAbsoluteX(program, registers, ram);
@@ -1041,7 +1050,7 @@ void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram,
 }
 
 void storeAbsoluteX(FILE* program, Registers *registers, uint8_t *ram,
-                   uint8_t value) {
+                    uint8_t value) {
         uint8_t lowbyte, highbyte;
         uint16_t address;
 
@@ -1057,7 +1066,7 @@ void storeAbsoluteX(FILE* program, Registers *registers, uint8_t *ram,
 }
 
 void storeAbsoluteY(FILE* program, Registers *registers, uint8_t *ram,
-                   uint8_t value) {
+                    uint8_t value) {
         uint8_t lowbyte, highbyte;
         uint16_t address;
 
@@ -1083,7 +1092,7 @@ void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
 }
 
 void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
-                   uint8_t value) {
+                    uint8_t value) {
         uint8_t address;
 
         fpread(&address, 1, 1, registers->pc, program);
@@ -1095,7 +1104,7 @@ void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
 }
 
 void storeZeroPageY(FILE* program, Registers *registers, uint8_t *ram,
-                   uint8_t value) {
+                    uint8_t value) {
         uint8_t address;
 
         fpread(&address, 1, 1, registers->pc, program);
@@ -1120,7 +1129,7 @@ void storeIndirect(FILE* program, Registers *registers, uint8_t *ram,
 }
 
 void storeIndirectX(FILE* program, Registers *registers, uint8_t *ram,
-                   uint8_t value) {
+                    uint8_t value) {
         /* Note that the adress wraps around if greater than 0xFF */
         uint8_t address;
         uint16_t effectiveAddress;
@@ -1137,7 +1146,7 @@ void storeIndirectX(FILE* program, Registers *registers, uint8_t *ram,
 }
 
 void storeIndirectY(FILE* program, Registers *registers, uint8_t *ram,
-                   uint8_t value) {
+                    uint8_t value) {
         uint8_t address;
         uint16_t effectiveAddress;
 
@@ -1306,6 +1315,38 @@ uint8_t ROR(uint8_t operand, Registers *registers) {
         updateZeroFlag(operand, registers);
 
         return operand;
+}
+
+void SBC(uint8_t operand, Registers *registers) {
+        uint8_t temp;
+
+        /* Handle decimal mode */
+        if(D(registers)) {
+                temp = BCDToBin(registers->a) - BCDToBin(operand) -
+                        !C(registers);
+                temp > 99 ? SET_V(registers) : CLEAR_V(registers);
+                temp %= 100; /* Wrap around if overflowing */
+                temp = binToBCD(temp);
+        } else {
+                temp = registers->a - operand - !C(registers);
+                /* If the register and operand signs differ */
+                if(!(0x80 & registers->a) & (0x80 & operand)) {
+                        /* And if the result has the same sign as the
+                           operand, then there is overflow.*/
+                        if(!((0x80 & operand) & (0x80 & temp))) {
+                                SET_V(registers);
+                        } else {
+                                CLEAR_V(registers);
+                        }
+                } else {
+                        CLEAR_V(registers);
+                }
+        }
+
+        SIGNED(temp) >= 0 ? SET_C(registers) : CLEAR_C(registers);
+        updateNegFlag(temp, registers);
+        updateZeroFlag(temp, registers);
+        registers->a = temp;
 }
 
 uint8_t TRB(uint8_t operand, Registers *registers) {
