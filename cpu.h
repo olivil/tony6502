@@ -28,7 +28,7 @@
 #define CLEAR_I(registers) (registers->p &= 0b11111011)
 #define CLEAR_Z(registers) (registers->p &= 0b11111101)
 #define CLEAR_C(registers) (registers->p &= 0b11111110)
-/* Convert from unsigned to signed, used in relative adressing */
+/* Convert from unsigned to signed, used in relative adressing. */
 #define SIGNED(byte) ((int8_t) byte)
 
 typedef struct {
@@ -42,18 +42,19 @@ typedef struct {
         uint8_t sp;
         /* Program counter */
         uint16_t pc;
-        /* Processor flags
-           Each flag uses one bit, ordered as follows:
-           NV-BDIZC
-           Where:
-           N: negative
-           V: overflow
-           -: unused bit
-           B: break caused interrupt
-           D: decimal mode
-           I: IRQ disable
-           Z: zero
-           C: carry
+        /*
+         * Processor flags
+         * Each flag uses one bit, ordered as follows:
+         * NV-BDIZC
+         * Where:
+         * N: negative
+         * V: overflow
+         * -: unused bit
+         * B: break caused interrupt
+         * D: decimal mode
+         * I: IRQ disable
+         * Z: zero
+         * C: carry
         */
         uint8_t p;
 } Registers;
@@ -63,8 +64,9 @@ int execute(FILE *program, uint8_t *ram);
 void step(uint8_t opcode, FILE *program, uint8_t *ram, Registers *registers);
 
 /* Adressing modes and memory access */
+/* Read from file stream at given offset. */
 size_t fpread(void *ptr, size_t size, size_t nmemb, size_t offset,
-              FILE *stream); /* Read from file stream at given offset */
+              FILE *stream);
 /* Fetch functions */
 uint8_t fetchImmediate(FILE *program, Registers *registers);
 uint8_t fetchAbsolute(FILE *program, Registers *registers, uint8_t *ram);
@@ -78,17 +80,17 @@ uint8_t fetchIndirectX(FILE *program, Registers *registers, uint8_t *ram);
 uint8_t fetchIndirectY(FILE *program, Registers *registers, uint8_t *ram);
 
 /* Store functions */
-void storeAbsolute(FILE* program, Registers *registers, uint8_t *ram,
+void storeAbsolute(FILE *program, Registers *registers, uint8_t *ram,
                    uint8_t value);
-void storeAbsoluteX(FILE* program, Registers *registers, uint8_t *ram,
+void storeAbsoluteX(FILE *program, Registers *registers, uint8_t *ram,
                    uint8_t value);
-void storeAbsoluteY(FILE* program, Registers *registers, uint8_t *ram,
+void storeAbsoluteY(FILE *program, Registers *registers, uint8_t *ram,
                    uint8_t value);
-void storeZeroPage(FILE* program, Registers *registers, uint8_t *ram,
+void storeZeroPage(FILE *program, Registers *registers, uint8_t *ram,
                    uint8_t value);
-void storeZeroPageX(FILE* program, Registers *registers, uint8_t *ram,
+void storeZeroPageX(FILE *program, Registers *registers, uint8_t *ram,
                    uint8_t value);
-void storeZeroPageY(FILE* program, Registers *registers, uint8_t *ram,
+void storeZeroPageY(FILE *program, Registers *registers, uint8_t *ram,
                    uint8_t value);
 void storeIndirect(FILE *program, Registers *registers, uint8_t *ram,
                   uint8_t value);
