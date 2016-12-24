@@ -1,8 +1,10 @@
 CC=clang
 CFLAGS=-c -Wall
 LDFLAGS=
-SOURCES=main.c cpu.c
-OBJECTS=$(SOURCES:.c=.o)
+SRC_DIR=src
+OBJ_DIR=obj
+SOURCES=$(wildcard $(SRC_DIR)/*.c)
+OBJECTS=$(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
 EXECUTABLE=tony6502
 
 all: $(SOURCES) $(EXECUTABLE)
@@ -10,8 +12,9 @@ all: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
-.c.o:
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm $(OBJECTS) $(EXECUTABLE)
+	rm -rf $(OBJ_DIR) $(EXECUTABLE)
