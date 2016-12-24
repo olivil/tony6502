@@ -3,9 +3,10 @@ CFLAGS=-c -Wall
 LDFLAGS=
 SRC_DIR=src
 OBJ_DIR=obj
+BIN_DIR=bin
 SOURCES=$(wildcard $(SRC_DIR)/*.c)
 OBJECTS=$(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SOURCES))
-EXECUTABLE=tony6502
+EXECUTABLE=$(BIN_DIR)/tony6502
 
 all: $(SOURCES) $(EXECUTABLE)
 
