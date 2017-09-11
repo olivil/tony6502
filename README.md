@@ -15,4 +15,4 @@ necessary.
 * [65C02 Instruction Reference](http://web.archive.org/web/20150726004727/http://www.obelisk.demon.co.uk/65C02/reference.html)
 * [65C02 Adressing Modes](http://web.archive.org/web/20150726004620/http://www.obelisk.demon.co.uk/65C02/addressing.html)
 * [6502 Registers](http://web.archive.org/web/20140713170031/http://www.obelisk.demon.co.uk/6502/registers.html)
-* [Programming the 65C02](http://65xx.com/wp-content/uploads/2013/07/Programmanual.pdf)
+* [Programming the 65C02](./etc/prog_manual_wdc.pdf)
